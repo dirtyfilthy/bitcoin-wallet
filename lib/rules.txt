@@ -1,0 +1,1 @@
+rule net.dirtyfilthy.bouncycastle.** net.dirtyfilthy.bouncycastle.@1
