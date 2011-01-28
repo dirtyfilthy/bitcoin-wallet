@@ -7,32 +7,11 @@ import java.io.StreamCorruptedException;
 import java.net.UnknownHostException;
 import net.dirtyfilthy.bitcoin.core.Address;
 import net.dirtyfilthy.bitcoin.protocol.*;
+import net.dirtyfilthy.bitcoin.util.MyHex;
 import android.test.AndroidTestCase;
 public class ProtocolTest extends AndroidTestCase {
 	
-	private static void printBytes(
-	        byte[] bytes
-	        )
-	    {
-	        int cBytes = bytes.length;
-	        int iByte = 0;
-
-	        for (;;) {
-	            for (int i = 0; i < 8; i++) {
-	                String hex = Integer.toHexString(bytes[iByte++] & 0xff);
-	                if (hex.length() == 1) {
-	                    hex = "0" + hex;
-	                }
-
-	                System.out.print("0x" + hex + " ");
-	                if (iByte >= cBytes) {
-	                    System.out.println();
-	                    return;
-	                }
-	            }
-	            System.out.println();
-	        } 
-	    }
+	
 	
 	public void setUp(){
 		ProtocolVersion.useTestNet(false);
@@ -89,7 +68,7 @@ public class ProtocolTest extends AndroidTestCase {
 		DataInputStream in=new DataInputStream(byteStream);
 		VersionPacket v=new VersionPacket();
 		v.readExternal(in);
-		printBytes(v.create());
+		System.out.println(MyHex.encode(v.create()));
 		System.out.println(v.getVersion());
 		System.out.println(v.getCommand());
 	}

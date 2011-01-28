@@ -58,4 +58,22 @@ public class QuickHash {
 	return digester.digest(toHash);
 	}
 	
+	public static byte[] reverseByteArray(byte[] a) {
+		   byte[] b=a.clone();
+		   int left  = 0;          // index of leftmost element
+		   int right = b.length-1; // index of rightmost element
+		  
+		   while (left < right) {
+		      // exchange the left and right elements
+		      byte temp = b[left]; 
+		      b[left]  = b[right]; 
+		      b[right] = temp;
+		     
+		      // move the bounds toward the center
+		      left++;
+		      right--;
+		   }
+		   return b;
+		}
+	
 }

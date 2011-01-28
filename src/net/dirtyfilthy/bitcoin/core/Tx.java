@@ -52,7 +52,7 @@ public class Tx  implements ByteArrayable {
 		for(int i=0;i<items;i++){
 			this.txOutputs[i]=new TxOut(in);
 		}
-		this.transactionVersion=((long) Integer.reverseBytes(in.readInt())) & 0xffffffff;
+		this.lockTime=((long) Integer.reverseBytes(in.readInt())) & 0xffffffff;
 	}
 	
 	public byte[] toByteArray() {

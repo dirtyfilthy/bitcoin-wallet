@@ -105,6 +105,7 @@ public class Packet  implements ByteArrayable {
 	
 	public static byte[] readVariableField(DataInputStream in) throws IOException{
 		long size=readUnsignedVarInt(in);
+		System.out.println("reading var field of size "+size);
 		byte[] field=new byte[(int) size];
 		in.readFully(field);
 		return field;

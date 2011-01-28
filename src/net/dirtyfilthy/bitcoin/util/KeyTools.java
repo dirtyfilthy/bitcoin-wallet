@@ -71,7 +71,7 @@ public class KeyTools {
 	public static byte[] signData(ECPrivateKey key,byte data[]){
 		Signature s;
 		try {
-			s = Signature.getInstance("ECDSA", "DFBC");
+			s = Signature.getInstance("NONEwithECDSA", "DFBC");
 			s.initSign(key);
 			s.update(data);
 			return s.sign();
@@ -110,7 +110,7 @@ public class KeyTools {
 	public static boolean verifySignedData(ECPublicKey key,byte data[], byte sig[]){
 		Signature s; 
 		try {
-		s= Signature.getInstance("ECDSA", "DFBC");
+		s= Signature.getInstance("NONEwithECDSA", "DFBC");
 		s.initVerify(key);
 		s.update(data);
 		return s.verify(sig);

@@ -28,6 +28,7 @@ import java.util.Vector;
 import net.dirtyfilthy.bitcoin.protocol.Packet;
 import net.dirtyfilthy.bitcoin.protocol.ProtocolVersion;
 import net.dirtyfilthy.bitcoin.util.KeyTools;
+import net.dirtyfilthy.bitcoin.util.MyHex;
 import net.dirtyfilthy.bitcoin.util.QuickHash;
 import net.dirtyfilthy.bouncycastle.jce.ECNamedCurveTable;
 import net.dirtyfilthy.bouncycastle.jce.ECPointUtil;
@@ -46,7 +47,12 @@ public class Script  implements ByteArrayable {
 	private byte[] rawBytes=new byte[0];
 	private final static byte[] SCRIPT_TRUE={1};
 	private final static byte[] SCRIPT_FALSE={0};
+	Stack<byte[]> stack;
+	Stack<byte[]> altStack;
+	
 	public Script(byte[] rawBytes){
+		stack=new Stack<byte[]>();
+		altStack=new Stack<byte[]>();
 		DataInputStream in2=new DataInputStream(new ByteArrayInputStream(rawBytes));
 		OpData op;
 		while(true){
@@ -63,17 +69,34 @@ public class Script  implements ByteArrayable {
 	}
 
 	public Script(){
-
+		stack=new Stack<byte[]>();
+		altStack=new Stack<byte[]>();
 	}
 
 	Script(Vector<OpData> code){
+		stack=new Stack<byte[]>();
+		altStack=new Stack<byte[]>();
 		scriptCode=code;
 	}
 
 
 	Script(Script s){
+		stack=new Stack<byte[]>();
+		altStack=new Stack<byte[]>();
 		scriptCode=(Vector<OpData>) s.scriptCode.clone();
 	}
+	
+	
+	public void setStack(Stack<byte[]> s){
+		this.stack=s;
+	}
+	
+	public Stack<byte[]> getStack(){
+		return this.stack;
+	}
+	
+	
+	
 
 
 
@@ -180,7 +203,7 @@ public class Script  implements ByteArrayable {
 
 	private OpData getOp(DataInputStream in) throws IOException{
 		int opcode=in.read();
-		System.out.println("Got opcode "+opcode);
+		
 		if(opcode<0){
 			return null;
 		}
@@ -204,7 +227,12 @@ public class Script  implements ByteArrayable {
 			data=new byte[size];
 			in.read(data);
 		}
-
+		if(data==null){
+			System.out.println(OpCode.getByCode(opcode).toString());
+		}
+		else{
+			System.out.println(MyHex.encode(data));
+		}
 		return new OpData(opcode,data);
 
 	}
@@ -251,8 +279,7 @@ public class Script  implements ByteArrayable {
 	public boolean eval(Tx txTo, int txIn, int hashType){
 		int opCount=0;
 		Stack<Boolean> ifStack=new Stack<Boolean>();
-		Stack<byte[]> stack=new Stack<byte[]>();
-		Stack<byte[]> altStack=new Stack<byte[]>();;
+
 		List<OpCode> disabledCodes=Arrays.asList(ProtocolVersion.disabledOpCodes());
 		int index=0,separatorIndex=0;
 		for(OpData statement : scriptCode){

@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
+import java.util.List;
 
 import net.dirtyfilthy.bitcoin.protocol.Packet;
 import net.dirtyfilthy.bitcoin.protocol.ProtocolVersion;
@@ -83,7 +85,7 @@ public class Block implements ByteArrayable {
 	}
 	
 	public boolean validProofOfWork() {
-		byte[] h=this.hash();
+		byte[] h=QuickHash.reverseByteArray(this.hash());
 		if(h[0]!=0){
 			return false;
 		}
