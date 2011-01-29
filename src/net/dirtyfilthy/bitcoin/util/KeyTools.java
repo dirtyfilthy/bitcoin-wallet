@@ -12,6 +12,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
+import java.security.Security;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.cert.CertificateException;
@@ -28,6 +29,7 @@ import net.dirtyfilthy.bitcoin.core.Base58Hash160;
 import net.dirtyfilthy.bitcoin.wallet.Wallet;
 import net.dirtyfilthy.bouncycastle.jce.ECNamedCurveTable;
 import net.dirtyfilthy.bouncycastle.jce.ECPointUtil;
+import net.dirtyfilthy.bouncycastle.jce.provider.BouncyCastleProvider;
 import net.dirtyfilthy.bouncycastle.jce.provider.asymmetric.ec.EC5Util;
 import net.dirtyfilthy.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import net.dirtyfilthy.bouncycastle.jce.spec.ECParameterSpec;
@@ -38,6 +40,9 @@ public class KeyTools {
 	// encodes a public key into the form [0x04][32 bytes 'x' value][32 bytes 'y' value]
 	
 	public static byte[] encodePublicKey(ECPublicKey key){
+		if(Security.getProvider("DFBC")==null){
+			Security.addProvider(new BouncyCastleProvider());
+		}
 		net.dirtyfilthy.bouncycastle.math.ec.ECPoint p=EC5Util.convertPoint(key.getParams(), key.getW(), false);
 		return p.getEncoded();
 	}
@@ -45,6 +50,9 @@ public class KeyTools {
 	// decodes a raw public key in the form [0x04][32 bytes 'x' value][32 bytes 'y' value]
 	
 	public static ECPublicKey decodePublicKey(byte[] encoded){
+		if(Security.getProvider("DFBC")==null){
+			Security.addProvider(new BouncyCastleProvider());
+		}
 		ECNamedCurveParameterSpec params = ECNamedCurveTable.getParameterSpec("secp256k1");
 		KeyFactory fact;
 		try {
@@ -69,6 +77,9 @@ public class KeyTools {
 	
 
 	public static byte[] signData(ECPrivateKey key,byte data[]){
+		if(Security.getProvider("DFBC")==null){
+			Security.addProvider(new BouncyCastleProvider());
+		}
 		Signature s;
 		try {
 			s = Signature.getInstance("NONEwithECDSA", "DFBC");
@@ -89,13 +100,15 @@ public class KeyTools {
 	
 
 	public static KeyPair generateKeyPair() {
+		if(Security.getProvider("DFBC")==null){
+			Security.addProvider(new BouncyCastleProvider());
+		}
 		ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256k1");
 		KeyPairGenerator generator;
 		try {
 			generator = KeyPairGenerator.getInstance("ECDSA", "DFBC");
 			generator.initialize(ecSpec, new SecureRandom());
 			KeyPair pair = generator.generateKeyPair();
-			ContentValues initialValues = new ContentValues();
 			return pair;
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException(e);
@@ -108,6 +121,9 @@ public class KeyTools {
 	}
 
 	public static boolean verifySignedData(ECPublicKey key,byte data[], byte sig[]){
+		if(Security.getProvider("DFBC")==null){
+			Security.addProvider(new BouncyCastleProvider());
+		}
 		Signature s; 
 		try {
 		s= Signature.getInstance("NONEwithECDSA", "DFBC");

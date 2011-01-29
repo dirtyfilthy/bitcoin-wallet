@@ -39,6 +39,24 @@ public class Tx  implements ByteArrayable {
 		}
 	}
 	
+	public static boolean verifySignature(Tx from, Tx to, int index, int hashType){
+		if(index>=to.getTxInputs().length){
+			System.out.println("Input index greater than length");
+			return false;
+		}
+		TxIn input=to.getTxInputs()[index];
+		if (input.getOutpointIndex() >= from.getTxOutputs().length){
+			System.out.println("Output index greater than length");
+			return false;
+		}
+		TxOut output=from.getTxOutputs()[(int) input.getOutpointIndex()];
+		if(!Script.verifyScript(input.getScript(), output.getScript(), to, index, hashType)){
+			System.out.println("Verify script failed");
+			return false;
+		}
+		return true;
+	}
+	
 	public Tx(DataInputStream in) throws IOException {
 		int items;
 		this.transactionVersion=((long) Integer.reverseBytes(in.readInt())) & 0xffffffff;
@@ -67,6 +85,7 @@ public class Tx  implements ByteArrayable {
 		for(TxOut out : txOutputs){
 			dataBuffer.put(out.toByteArray());
 		}
+		dataBuffer.putInt((int) this.lockTime);
 		byte[] dataContents=new byte[dataBuffer.position()];
 		ByteBuffer slicedBuffer=(ByteBuffer) dataBuffer.duplicate();
 		slicedBuffer.rewind();

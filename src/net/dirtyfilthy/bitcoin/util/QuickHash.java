@@ -3,6 +3,9 @@ package net.dirtyfilthy.bitcoin.util;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import net.dirtyfilthy.bouncycastle.crypto.digests.RIPEMD160Digest;
+import net.dirtyfilthy.bouncycastle.jce.provider.JDKMessageDigest;
+
 public class QuickHash {
 	
 	public static byte[] sha256(byte[] toHash){
@@ -44,18 +47,9 @@ public class QuickHash {
 	}
 	
 	public static byte[] ripemd160(byte[] toHash){
-		MessageDigest digester;
-		try {
-			digester = MessageDigest.getInstance("RIPEMD-160");
-		} catch (NoSuchAlgorithmException e) {
-		
-			try {
-				digester = MessageDigest.getInstance("RIPEMD160");
-			} catch (NoSuchAlgorithmException e1) {
-				throw new RuntimeException("Can't find ripemd160 message digest algorithm",e1);
-			}
-	}
-	return digester.digest(toHash);
+		MessageDigest digester;;
+		digester = new  JDKMessageDigest.RIPEMD160(); 
+		return digester.digest(toHash);
 	}
 	
 	public static byte[] reverseByteArray(byte[] a) {
