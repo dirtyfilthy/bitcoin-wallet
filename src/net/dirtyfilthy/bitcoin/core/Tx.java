@@ -4,14 +4,15 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Vector;
 
 import net.dirtyfilthy.bitcoin.protocol.Packet;
 
 public class Tx  implements ByteArrayable {
 	private long transactionVersion;
 	private long lockTime;
-	private TxIn[] txInputs;
-	private TxOut[] txOutputs;
+	private Vector<TxIn> txInputs=new Vector<TxIn>();
+	private Vector<TxOut> txOutputs=new Vector<TxOut>();
 	public static final int SIGHASH_ALL = 1;
 	public static final int SIGHASH_NONE = 2;
 	public static final int SIGHASH_SINGLE = 3;
@@ -25,31 +26,27 @@ public class Tx  implements ByteArrayable {
 	public Tx(Tx t){
 		this.lockTime=t.lockTime;
 		this.transactionVersion=t.transactionVersion;
-		this.txInputs=new TxIn[t.txInputs.length];
-		this.txOutputs=new TxOut[t.txOutputs.length];
 		int index=0;
 		for(TxIn in : t.txInputs){
-			this.txInputs[index]=t.txInputs[index].clone();
-			index++;
+			this.txInputs.add(in.clone());
 		}
-		index=0;
 		for(TxOut out : t.txOutputs){
-			this.txOutputs[index]=t.txOutputs[index].clone();
-			index++;
+			this.txOutputs.add(out.clone());
 		}
+		
 	}
 	
 	public static boolean verifySignature(Tx from, Tx to, int index, int hashType){
-		if(index>=to.getTxInputs().length){
+		if(index>=to.getTxInputs().size()){
 			System.out.println("Input index greater than length");
 			return false;
 		}
-		TxIn input=to.getTxInputs()[index];
-		if (input.getOutpointIndex() >= from.getTxOutputs().length){
+		TxIn input=to.getTxInputs().get(index);
+		if (input.getOutpointIndex() >= from.getTxOutputs().size()){
 			System.out.println("Output index greater than length");
 			return false;
 		}
-		TxOut output=from.getTxOutputs()[(int) input.getOutpointIndex()];
+		TxOut output=from.getTxOutputs().get((int) input.getOutpointIndex());
 		if(!Script.verifyScript(input.getScript(), output.getScript(), to, index, hashType)){
 			System.out.println("Verify script failed");
 			return false;
@@ -61,14 +58,12 @@ public class Tx  implements ByteArrayable {
 		int items;
 		this.transactionVersion=((long) Integer.reverseBytes(in.readInt())) & 0xffffffff;
 		items=(int) Packet.readUnsignedVarInt(in);
-		this.txInputs=new TxIn[items];
 		for(int i=0;i<items;i++){
-			this.txInputs[i]=new TxIn(in);
+			this.txInputs.add(new TxIn(in));
 		}
 		items=(int) Packet.readUnsignedVarInt(in);
-		this.txOutputs=new TxOut[items];
 		for(int i=0;i<items;i++){
-			this.txOutputs[i]=new TxOut(in);
+			this.txOutputs.add(new TxOut(in));
 		}
 		this.lockTime=((long) Integer.reverseBytes(in.readInt())) & 0xffffffff;
 	}
@@ -77,11 +72,11 @@ public class Tx  implements ByteArrayable {
 		ByteBuffer dataBuffer=ByteBuffer.allocate(500000);
 		dataBuffer.order(ByteOrder.LITTLE_ENDIAN);
 		dataBuffer.putInt((int) this.transactionVersion);
-		dataBuffer.put(Packet.createUnsignedVarInt(this.txInputs.length));
+		dataBuffer.put(Packet.createUnsignedVarInt(this.txInputs.size()));
 		for(TxIn in : txInputs){
 			dataBuffer.put(in.toByteArray());
 		}
-		dataBuffer.put(Packet.createUnsignedVarInt(this.txOutputs.length));
+		dataBuffer.put(Packet.createUnsignedVarInt(this.txOutputs.size()));
 		for(TxOut out : txOutputs){
 			dataBuffer.put(out.toByteArray());
 		}
@@ -110,19 +105,19 @@ public class Tx  implements ByteArrayable {
 		return lockTime;
 	}
 
-	public void setTxInputs(TxIn[] txInputs) {
+	public void setTxInputs(Vector<TxIn> txInputs) {
 		this.txInputs = txInputs;
 	}
 
-	public TxIn[] getTxInputs() {
+	public Vector<TxIn> getTxInputs() {
 		return txInputs;
 	}
 
-	public void setTxOutputs(TxOut[] txOutputs) {
+	public void setTxOutputs(Vector<TxOut> txOutputs) {
 		this.txOutputs = txOutputs;
 	}
 
-	public TxOut[] getTxOutputs() {
+	public Vector<TxOut> getTxOutputs() {
 		return txOutputs;
 	}
 

@@ -3,6 +3,7 @@ package net.dirtyfilthy.bitcoin.test;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.Vector;
 
 import net.dirtyfilthy.bitcoin.core.Tx;
 import net.dirtyfilthy.bitcoin.core.TxIn;
@@ -37,15 +38,15 @@ public class TxTest extends AndroidTestCase {
 	
 	public void testParse() throws IOException{
 		Tx toTx=new Tx(toTxStream);
-		TxIn[] txIn=toTx.getTxInputs();
-		TxOut[] txOut=toTx.getTxOutputs();
-		assertEquals(3,txIn.length);
-		assertEquals(1,txOut.length);
+		Vector<TxIn> txIn=toTx.getTxInputs();
+		Vector<TxOut> txOut=toTx.getTxOutputs();
+		assertEquals(3,txIn.size());
+		assertEquals(1,txOut.size());
 		Tx fromTx=new Tx(fromTxStream);
 		txIn=fromTx.getTxInputs();
 		txOut=fromTx.getTxOutputs();
-		assertEquals(2,txIn.length);
-		assertEquals(1,txOut.length);
+		assertEquals(2,txIn.size());
+		assertEquals(1,txOut.size());
 	}
 	
 	public void testVerifySignature() throws IOException{

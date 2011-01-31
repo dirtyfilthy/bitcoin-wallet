@@ -29,6 +29,11 @@ public class TxOut  implements ByteArrayable, Cloneable  {
 	public Script getScript() {
 		return script;
 	}
+	
+	public Script script() {
+		return getScript();
+	}
+	
 	public void setValue(BtcValue value) {
 		this.value = value;
 	}

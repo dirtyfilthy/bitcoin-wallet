@@ -101,46 +101,43 @@ public class Script implements ByteArrayable {
 		sub2.deleteOp(OpCode.OP_CODESEPARATOR);
 		System.out.println("SUBSCRIPT");
 		System.out.println(sub2);
-		TxIn[] txInputs = txTmp.getTxInputs();
-		if (txInIndex >= txInputs.length) {
+		Vector<TxIn> txInputs = txTmp.getTxInputs();
+		if (txInIndex >= txInputs.size()) {
 			return fail;
 		}
 		for (TxIn in : txInputs) {
 			in.setScript(new Script());
 		}
-		txInputs[txInIndex].setScript(sub2);
+		txInputs.get(txInIndex).setScript(sub2);
 		if ((hashType & 0x1f) == Tx.SIGHASH_NONE) {
 			// Wildcard payee
-			txTmp.setTxOutputs(new TxOut[0]);
+			txTmp.setTxOutputs(new Vector<TxOut>());
 
 			// Let the others update at will
-			for (int i = 0; i < txInputs.length; i++)
+			for (int i = 0; i < txInputs.size(); i++)
 				if (i != txInIndex)
-					txInputs[i].setOutpointIndex(0);
+					txInputs.get(i).setOutpointIndex(0);
 		} else if ((hashType & 0x1f) == Tx.SIGHASH_SINGLE) {
 			// Only lockin the txout payee at same index as txin
 			int out = txInIndex;
-			if (out >= txTmp.getTxOutputs().length) {
+			if (out >= txTmp.getTxOutputs().size()) {
 				return fail;
 			}
-			TxOut[] txOutputs = txTmp.getTxOutputs();
-			TxOut[] txOutputs2 = new TxOut[txOutputs.length + 1];
-			System.arraycopy(txOutputs, 0, txOutputs2, 0, txOutputs.length);
-			txOutputs = txOutputs2;
-			txOutputs[txOutputs.length - 1] = new TxOut();
+			Vector<TxOut> txOutputs = txTmp.getTxOutputs();
+			txOutputs.setSize(out);
 			for (int i = 0; i < out; i++)
-				txOutputs[i].setNull();
+				txOutputs.get(i).setNull();
 
 			// Let the others update at will
-			for (int i = 0; i < txInputs.length; i++)
+			for (int i = 0; i < txInputs.size(); i++)
 				if (i != txInIndex)
-					txInputs[i].setOutpointIndex(0);
+					txInputs.get(i).setOutpointIndex(0);
 		}
 		if ((hashType & Tx.SIGHASH_ANYONECANPAY) != 0) {
-			TxIn tmp = txTmp.getTxInputs()[txInIndex];
-			TxIn[] t = new TxIn[1];
-			t[0] = tmp;
-			txTmp.setTxInputs(t);
+			TxIn tmp = txTmp.getTxInputs().get(txInIndex);
+			Vector<TxIn> nt=new Vector<TxIn>();
+			nt.add(tmp);
+			txTmp.setTxInputs(nt);
 		}
 
 		// Serialize and hash
@@ -1017,6 +1014,19 @@ public class Script implements ByteArrayable {
 		OpData statement = new OpData(op.code(), null);
 		scriptCode.add(statement);
 	}
+	
+	
+	public void pushData(long n){
+		if (n == -1 || (n >= 1 && n <= 16))
+		{
+			OpCode op=OpCode.getByCode((int) n+(OpCode.OP_1.code()-1));
+			this.pushOp(op);
+		}
+		else
+		{
+			this.pushData(QuickHash.reverseByteArray(BigInteger.valueOf(n).toByteArray()));
+		}
+	}		
 
 	public void pushData(byte[] data) {
 		int size = data.length;

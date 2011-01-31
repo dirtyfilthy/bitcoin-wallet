@@ -10,15 +10,15 @@ public class BtcValue {
 	
 	byte[] bytes=new byte[8];
 	public static final int COIN = 100000000;
-	long value=0;
+	private long value=0;
 	
 	
 	
-	BtcValue(DataInputStream in) throws IOException{
+	public BtcValue(DataInputStream in) throws IOException{
 		value=Long.reverseBytes(in.readLong());
 	}
 	
-	BtcValue(long v){
+	public BtcValue(long v){
 		value=v;
 	}
 	

@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Vector;
 
 import net.dirtyfilthy.bitcoin.protocol.Packet;
 import net.dirtyfilthy.bitcoin.protocol.ProtocolVersion;
@@ -20,7 +21,7 @@ public class Block implements ByteArrayable {
 	private long difficulty;
 	private long nonce;
 	private byte hash[];
-	private Tx[] transactions;
+	private Vector<Tx> transactions=new Vector<Tx>();
 	private boolean headersOnly=false;
 	
 	
@@ -36,10 +37,10 @@ public class Block implements ByteArrayable {
 		this.difficulty=((long) Integer.reverseBytes(in.readInt())) & 0xffffffff;
 		this.nonce=((long) Integer.reverseBytes(in.readInt())) & 0xffffffff;
 		int items=(int) Packet.readUnsignedVarInt(in);
-		this.transactions=new Tx[items];
+		transactions=new Vector<Tx>();
 		if(includeTransactions){
 			for(int i=0;i<items;i++){
-				this.transactions[i]=new Tx(in);
+				this.transactions.add(new Tx(in));
 			}
 		}
 		else{
@@ -67,7 +68,7 @@ public class Block implements ByteArrayable {
 		dataBuffer.putInt((int) this.difficulty);
 		dataBuffer.putInt((int) this.nonce);
 		if(includeTransactions){
-			dataBuffer.put(Packet.createUnsignedVarInt(transactions.length));
+			dataBuffer.put(Packet.createUnsignedVarInt(transactions.size()));
 			for(Tx tx : transactions){
 				dataBuffer.put(tx.toByteArray());
 			}
@@ -138,12 +139,17 @@ public class Block implements ByteArrayable {
 		return previousHash;
 	}
 
-	public void setTransactions(Tx[] transactions) {
+	public void setTransactions(Vector<Tx> transactions) {
 		this.transactions = transactions;
 	}
 
-	public Tx[] getTransactions() {
+	public Vector<Tx> getTransactions() {
 		return transactions;
+	}
+	
+	public void addTransaction(Tx tx){
+		transactions.add(tx);
+		
 	}
 
 	public void setHeadersOnly(boolean headersOnly) {
@@ -153,6 +159,7 @@ public class Block implements ByteArrayable {
 	public boolean isHeadersOnly() {
 		return headersOnly;
 	}
+	
 	
 
 }

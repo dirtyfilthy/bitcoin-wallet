@@ -11,9 +11,9 @@ import net.dirtyfilthy.bouncycastle.util.encoders.Hex;
 
 public class TxIn  implements ByteArrayable, Cloneable {
 	private byte[] outpointHash=new byte[32];
-	private long outpointIndex;
-	private Script script;
-	private long sequence;
+	private long outpointIndex=0;
+	private Script script=new Script();
+	private long sequence=0;
 	
 	 
 	public TxIn(DataInputStream in) throws IOException{
@@ -25,6 +25,10 @@ public class TxIn  implements ByteArrayable, Cloneable {
 		this.sequence=((long) Integer.reverseBytes(in.readInt())) & 0xffffffff;
 	}
 	
+	public TxIn() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public TxIn clone(){
 		try {
 			return (TxIn) super.clone();
@@ -63,6 +67,13 @@ public class TxIn  implements ByteArrayable, Cloneable {
 	public Script getScript() {
 		return script;
 	}
+	
+
+	public Script script() {
+		return getScript();
+	}
+	
+	
 
 
 	public void setTransactionVersion(int transactionVersion) {
