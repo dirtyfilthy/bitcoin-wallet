@@ -20,7 +20,8 @@ public class Block implements ByteArrayable {
 	private long difficulty;
 	private long nonce;
 	private byte hash[];
-	private Tx[] transactions; 
+	private Tx[] transactions;
+	private boolean headersOnly=false;
 	
 	
 	public Block(){
@@ -40,6 +41,9 @@ public class Block implements ByteArrayable {
 			for(int i=0;i<items;i++){
 				this.transactions[i]=new Tx(in);
 			}
+		}
+		else{
+			headersOnly=true;
 		}
 	}
 	
@@ -140,6 +144,14 @@ public class Block implements ByteArrayable {
 
 	public Tx[] getTransactions() {
 		return transactions;
+	}
+
+	public void setHeadersOnly(boolean headersOnly) {
+		this.headersOnly = headersOnly;
+	}
+
+	public boolean isHeadersOnly() {
+		return headersOnly;
 	}
 	
 
