@@ -31,14 +31,15 @@ public class Block implements ByteArrayable {
 	
 	public Block(DataInputStream in, boolean includeTransactions) throws IOException{
 		this.blockVersion=((long) Integer.reverseBytes(in.readInt())) & 0xffffffff;
-		in.read(previousHash);
-		in.read(merkleRoot);
+		in.readFully(previousHash);
+		in.readFully(merkleRoot);
 		this.timestamp=new java.util.Date(((long) Integer.reverseBytes(in.readInt()) & 0xffffffff)*1000);
 		this.difficulty=((long) Integer.reverseBytes(in.readInt())) & 0xffffffff;
 		this.nonce=((long) Integer.reverseBytes(in.readInt())) & 0xffffffff;
-		int items=(int) Packet.readUnsignedVarInt(in);
+		
 		transactions=new Vector<Tx>();
 		if(includeTransactions){
+			int items=(int) Packet.readUnsignedVarInt(in);
 			for(int i=0;i<items;i++){
 				this.transactions.add(new Tx(in));
 			}
@@ -64,7 +65,7 @@ public class Block implements ByteArrayable {
 		dataBuffer.putInt((int) this.blockVersion);
 		dataBuffer.put(this.previousHash);
 		dataBuffer.put(this.merkleRoot);
-		dataBuffer.putInt((int) this.timestamp.getTime()/1000);
+		dataBuffer.putInt((int) (this.timestamp.getTime()/1000));
 		dataBuffer.putInt((int) this.difficulty);
 		dataBuffer.putInt((int) this.nonce);
 		if(includeTransactions){
