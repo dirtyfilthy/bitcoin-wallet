@@ -40,7 +40,7 @@ public class BlockTest  extends AndroidTestCase {
 		assertTrue("Merkle root different", Arrays.areEqual(genesis.getMerkleRoot(), genesis2.getMerkleRoot()));
 		
 		assertEquals("Timestamp different", genesis.getTimestamp().getTime(), genesis2.getTimestamp().getTime());
-		assertEquals("Difficulty different", genesis.getDifficulty(), genesis2.getDifficulty());
+		assertEquals("Difficulty different", genesis.getBits(), genesis2.getBits());
 		assertEquals("Nonce different", genesis.getNonce(), genesis2.getNonce());
 		
 		assertTrue("Block does not reserialize same way", Arrays.areEqual(serialized, serialized2));

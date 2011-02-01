@@ -14,11 +14,16 @@ public class BlockNode {
 	private BlockNode next;
 	private BlockNode prev;
 	private int height=-1;
+	private BigInteger totalWork;
 	
 	public BlockNode(Block block){
 		this.block=block;
 		bigIntegerHash=new BigInteger(block.hash());
 		previousBigIntegerHash=new BigInteger(block.getPreviousHash());
+	}
+	
+	public Block block(){
+		return this.block;
 	}
 
 	public void setNext(BlockNode next) {
@@ -45,7 +50,7 @@ public class BlockNode {
 			 return ProtocolVersion.proofOfWorkLimit();
 		 }
 		 if((this.height()+1) % interval != 0){
-			 return this.difficulty();
+			 return this.target();
 		 }
 		 BlockNode first=this;
 		 for (int i = 0; i<interval-1; i++){
@@ -58,7 +63,7 @@ public class BlockNode {
 		 if (actualTimespan > targetTimespan*4){
 			 actualTimespan = targetTimespan*4;
 		 }
-		 BigInteger nextDifficulty=this.difficulty().multiply(BigInteger.valueOf(targetTimespan));
+		 BigInteger nextDifficulty=this.target().multiply(BigInteger.valueOf(targetTimespan));
 		 nextDifficulty=nextDifficulty.divide(BigInteger.valueOf(actualTimespan));
 		 if(nextDifficulty.compareTo(ProtocolVersion.proofOfWorkLimit())>0){
 			 nextDifficulty=ProtocolVersion.proofOfWorkLimit();
@@ -97,7 +102,7 @@ public class BlockNode {
 		return values.get(values.size()/2).longValue();
 	}
 	
-	public BigInteger difficulty(){
+	public BigInteger target(){
 		return block.targetHash();
 	}
 	
@@ -111,11 +116,17 @@ public class BlockNode {
 		return vbn;
 	}
 	
-	public BigInteger getTotalDifficulty(){
-		if(this.prev()==null){
-			return difficulty();
+	public BigInteger getTotalWork(){
+		if(totalWork!=null){
+			return totalWork;
 		}
-		return difficulty().add(this.prev().getTotalDifficulty());
+		if(this.prev()==null){
+			totalWork=block.getWork();
+		}
+		else{
+			totalWork=block.getWork().add(this.prev().getTotalWork());
+		}
+		return totalWork;
 	}
 	
 	

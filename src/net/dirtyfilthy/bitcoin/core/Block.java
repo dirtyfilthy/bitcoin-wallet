@@ -18,7 +18,7 @@ public class Block implements ByteArrayable {
 	private byte[] previousHash=new byte[32];
 	private byte[] merkleRoot=new byte[32];
 	private java.util.Date timestamp;
-	private long difficulty;
+	private long bits;
 	private long nonce;
 	private byte hash[];
 	private Vector<Tx> transactions=new Vector<Tx>();
@@ -34,7 +34,7 @@ public class Block implements ByteArrayable {
 		in.readFully(previousHash);
 		in.readFully(merkleRoot);
 		this.timestamp=new java.util.Date(((long) Integer.reverseBytes(in.readInt()) & 0xffffffff)*1000);
-		this.difficulty=((long) Integer.reverseBytes(in.readInt())) & 0xffffffff;
+		this.bits=((long) Integer.reverseBytes(in.readInt())) & 0xffffffff;
 		this.nonce=((long) Integer.reverseBytes(in.readInt())) & 0xffffffff;
 		
 		transactions=new Vector<Tx>();
@@ -49,9 +49,15 @@ public class Block implements ByteArrayable {
 		}
 	}
 	
+	public BigInteger getWork(){
+		BigInteger b=BigInteger.valueOf(1).shiftLeft(256);
+		BigInteger work=b.divide(this.targetHash().add(BigInteger.ONE));
+		return work;
+	}
+	
 	public BigInteger targetHash(){
-		int leftShift=(int) (((difficulty >> 24) & 0xff)-3)*8;
-		BigInteger base=BigInteger.valueOf(difficulty & 0xffffff);
+		int leftShift=(int) (((bits >> 24) & 0xff)-3)*8;
+		BigInteger base=BigInteger.valueOf(bits & 0xffffff);
 		return base.shiftLeft(leftShift);
 	}
 	
@@ -66,7 +72,7 @@ public class Block implements ByteArrayable {
 		dataBuffer.put(this.previousHash);
 		dataBuffer.put(this.merkleRoot);
 		dataBuffer.putInt((int) (this.timestamp.getTime()/1000));
-		dataBuffer.putInt((int) this.difficulty);
+		dataBuffer.putInt((int) this.bits);
 		dataBuffer.putInt((int) this.nonce);
 		if(includeTransactions){
 			dataBuffer.put(Packet.createUnsignedVarInt(transactions.size()));
@@ -117,11 +123,11 @@ public class Block implements ByteArrayable {
 	public java.util.Date getTimestamp() {
 		return timestamp;
 	}
-	public void setDifficulty(long difficulty) {
-		this.difficulty = difficulty;
+	public void setBits(long bits) {
+		this.bits = bits;
 	}
-	public long getDifficulty() {
-		return difficulty;
+	public long getBits() {
+		return bits;
 	}
 	public void setNonce(long nonce) {
 		this.nonce = nonce;

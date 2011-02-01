@@ -11,7 +11,7 @@ public class ConnectionHandlerTest extends AndroidTestCase {
 	public ConnectionHandler ch;
 	
 	public void setUp(){
-		ProtocolVersion.useTestNet(true);
+		ProtocolVersion.useTestNet(false);
 		try {
 			ch=new ConnectionHandler();
 		} catch (UnknownHostException e) {
@@ -20,10 +20,23 @@ public class ConnectionHandlerTest extends AndroidTestCase {
 		}
 	}
 	
+	public void tearDown(){
+		ch.closeAll();
+	}
+	
 	public void testMaintainConnections() throws InterruptedException{
 		ch.maintainConnections();
 		Thread.sleep(30 * 1000);
 		assertEquals(5,ch.getConnectionsNumber());
 	}
+	
+	public void testDownloadHeaders() throws InterruptedException{
+		ch.maintainConnections();
+		Thread.sleep(30 * 1000);
+		ch.getInitialHeaders();
+		Thread.sleep(30 * 1000);
+	}
+	
+	
 
 }

@@ -63,6 +63,8 @@ public class PacketFactory {
 		case BLOCK: packet=new BlockPacket(this.version); break;
 		case TX: packet=new TxPacket(this.version); break;
 		case GETBLOCKS: packet=new GetBlocksPacket(this.version); break;
+		case GETHEADERS: packet=new GetHeadersPacket(this.version); break;
+		case HEADERS: packet=new HeadersPacket(this.version); break;
 		default: throw new RuntimeException("Invalid packet type");
 		}
 		packet.setPacketType(packetType);

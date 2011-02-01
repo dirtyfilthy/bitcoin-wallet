@@ -6,16 +6,21 @@ import java.util.List;
 import java.util.Vector;
 
 import net.dirtyfilthy.bitcoin.core.Address;
+import net.dirtyfilthy.bitcoin.core.Block;
+import net.dirtyfilthy.bitcoin.core.BlockChain;
+import net.dirtyfilthy.bitcoin.core.InvalidBlockException;
 
 public class ConnectionHandler {
-	Vector<Connection> connections=new Vector<Connection>();
-	AddressBook addressBook;
-	Address localAddress;
+	private Vector<Connection> connections=new Vector<Connection>();
+	private AddressBook addressBook;
+	private Address localAddress;
+	private BlockChain blockChain;
 	private int connectionsToMaintain=5;
 	
 	public ConnectionHandler() throws UnknownHostException{
 		this.addressBook=new AddressBook();
-		this.localAddress=new Address("127.0.0.1",18333);
+		this.localAddress=new Address("0.0.0.0",18333);
+		this.blockChain=new BlockChain();
 	}
 	
 	public void maintainConnections(){
@@ -55,7 +60,13 @@ public class ConnectionHandler {
 		}
 	}
 		
-
+	public synchronized void getInitialHeaders(){
+		for(Connection c : connections){
+			GetHeadersPacket gh=(GetHeadersPacket) c.createPacket(PacketType.GETHEADERS);
+			gh.startHashes().add(blockChain.topBlock().hash());
+			c.sendPacket(gh);
+		}
+	}
 	
 	
 	public synchronized Connection connectTo(Address a) throws IOException{
@@ -112,6 +123,34 @@ public class ConnectionHandler {
 			c.hasRecievedVerack(true);
 			addressBook.justSeen(address);
 			break;
+		case HEADERS:
+			// primitive headers function
+			HeadersPacket h=(HeadersPacket) p;
+			if(h.headers().size()==0){
+				break;
+			}
+			for(Block header : h.headers()){
+				try {
+					if(!blockChain.isKnown(header)){
+						blockChain.addBlock(header);
+					}
+				} catch (InvalidBlockException e) {
+					// TODO actually handle
+					e.printStackTrace();
+					continue;
+				}
+			}
+			GetHeadersPacket gh=(GetHeadersPacket) c.createPacket(PacketType.GETHEADERS);
+			gh.startHashes().add(blockChain.topBlock().hash());
+			c.sendPacket(gh);
+		}
+		
+			
+	}
+	
+	public void closeAll(){
+		for(Connection c : connections){
+			c.close();
 		}
 	}
 
@@ -125,6 +164,14 @@ public class ConnectionHandler {
 	
 	public int getConnectionsNumber() {
 		return this.connections.size();
+	}
+
+	public void setBlockChain(BlockChain blockChain) {
+		this.blockChain = blockChain;
+	}
+
+	public BlockChain getBlockChain() {
+		return blockChain;
 	}
 
 }

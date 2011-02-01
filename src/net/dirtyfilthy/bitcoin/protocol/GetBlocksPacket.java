@@ -2,12 +2,13 @@ package net.dirtyfilthy.bitcoin.protocol;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.Vector;
 
 import net.dirtyfilthy.bitcoin.core.Address;
 
 public class GetBlocksPacket extends Packet {
 	
-	private byte[][] startHashes;
+	private Vector<byte[]>startHashes;
 	private byte[] endHash=new byte[32];
 	
 	public GetBlocksPacket() {
@@ -22,15 +23,18 @@ public class GetBlocksPacket extends Packet {
 	
 	public void readData(DataInputStream in) throws IOException{
 		int items=(int) Packet.readUnsignedVarInt(in);
-		this.startHashes=new byte[items][32];
+		this.startHashes=new Vector<byte[]>();
+		
 		for(int i=0;i<items;i++){
-			in.read(startHashes[i]);
+			byte[] hash=new byte[32];
+			in.read(hash);
+			startHashes.add(hash);
 		}
 		in.read(endHash);
 	}
 	
 	public byte[] create(){
-		writeUnsignedVarInt(startHashes.length);
+		writeUnsignedVarInt(startHashes.size());
 		for(byte[] hash : startHashes){
 			dataBuffer.put(hash);
 		}
@@ -38,11 +42,11 @@ public class GetBlocksPacket extends Packet {
 		return toByteArray();
 	}
 
-	public void setStartHashes(byte[][] startHashes) {
+	public void setStartHashes(Vector<byte[]> startHashes) {
 		this.startHashes = startHashes;
 	}
 
-	public byte[][] getStartHashes() {
+	public Vector<byte[]> startHashes() {
 		return startHashes;
 	}
 

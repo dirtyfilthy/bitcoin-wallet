@@ -36,11 +36,10 @@ public class ProtocolVersion {
 	
 	static public Block genesisBlock(){
 		Block g=new Block();
-		g.setDifficulty(486604799);
+		g.setBits(486604799);
 		g.setTimestamp(new java.util.Date(1231006505000L));
 		g.setBlockVersion(1);
 		g.setNonce(2083236893);
-		System.out.println("his hash:"+MyHex.encode(QuickHash.doubleSha256(raw)));
 		g.setMerkleRoot(QuickHash.reverseByteArray(Hex.decode("4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b")));
 		TxIn in=new TxIn();
 		in.script().pushData(486604799);
