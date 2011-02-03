@@ -16,11 +16,18 @@ public class ConnectionHandler {
 	private Address localAddress;
 	private BlockChain blockChain;
 	private int connectionsToMaintain=5;
+	private MaintainConnectionsThread maintainThread;
 	
 	public ConnectionHandler() throws UnknownHostException{
 		this.addressBook=new AddressBook();
 		this.localAddress=new Address("0.0.0.0",18333);
 		this.blockChain=new BlockChain();
+		this.maintainThread=new MaintainConnectionsThread(this);
+	
+	}
+	
+	public void run(){
+		this.maintainThread.run();
 	}
 	
 	public void maintainConnections(){
@@ -149,6 +156,8 @@ public class ConnectionHandler {
 	}
 	
 	public void closeAll(){
+		maintainThread.close();
+		maintainThread.interrupt();
 		for(Connection c : connections){
 			c.close();
 		}
@@ -173,5 +182,34 @@ public class ConnectionHandler {
 	public BlockChain getBlockChain() {
 		return blockChain;
 	}
+	
+	private class MaintainConnectionsThread extends Thread {
+	
+		private boolean shouldClose=false;
+		private ConnectionHandler ch;
+		
+		public MaintainConnectionsThread(ConnectionHandler ch){
+			this.ch=ch;
+		}
+		
+		public void run(){
+			while(!shouldClose){
+				ch.maintainConnections();
+				try {
+					sleep(500);
+				} catch (InterruptedException e) {
+					shouldClose=true;
+				}
+			}
+		}
+		
+		public void close(){
+			shouldClose=true;
+		}
+		
+		
+	
+	}
+	
 
 }

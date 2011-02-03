@@ -25,13 +25,13 @@ public class ConnectionHandlerTest extends AndroidTestCase {
 	}
 	
 	public void testMaintainConnections() throws InterruptedException{
-		ch.maintainConnections();
+		ch.run();
 		Thread.sleep(30 * 1000);
 		assertEquals(5,ch.getConnectionsNumber());
 	}
 	
 	public void testDownloadHeaders() throws InterruptedException{
-		ch.maintainConnections();
+		ch.run();
 		Thread.sleep(30 * 1000);
 		ch.getInitialHeaders();
 		Thread.sleep(30 * 1000);
