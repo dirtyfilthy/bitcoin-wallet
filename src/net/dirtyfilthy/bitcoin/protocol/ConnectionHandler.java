@@ -9,6 +9,7 @@ import net.dirtyfilthy.bitcoin.core.Address;
 import net.dirtyfilthy.bitcoin.core.Block;
 import net.dirtyfilthy.bitcoin.core.BlockChain;
 import net.dirtyfilthy.bitcoin.core.InvalidBlockException;
+import net.dirtyfilthy.bitcoin.util.MyHex;
 
 public class ConnectionHandler {
 	private Vector<Connection> connections=new Vector<Connection>();
@@ -27,7 +28,7 @@ public class ConnectionHandler {
 	}
 	
 	public void run(){
-		this.maintainThread.run();
+		this.maintainThread.start();
 	}
 	
 	public void maintainConnections(){
@@ -72,6 +73,7 @@ public class ConnectionHandler {
 			GetHeadersPacket gh=(GetHeadersPacket) c.createPacket(PacketType.GETHEADERS);
 			gh.startHashes().add(blockChain.topBlock().hash());
 			c.sendPacket(gh);
+			
 		}
 	}
 	

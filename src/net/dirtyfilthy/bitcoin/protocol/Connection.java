@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.dirtyfilthy.bitcoin.core.Address;
+import net.dirtyfilthy.bitcoin.util.MyHex;
 
 public class Connection implements Runnable {
 	private Socket socket;
@@ -158,8 +159,12 @@ public class Connection implements Runnable {
 					}
 				}
 				try {
-					System.out.println("sending packet: "+toSend);
+					
 					toSend.writeExternal(this.out);
+					System.out.println("sending packet: "+toSend);
+					if(toSend.getCommand().equals("getheaders")){
+						System.out.println("getheaders packet: "+MyHex.encode(toSend.toByteArray()));
+					}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					ch.handleConnectionError(c,e);

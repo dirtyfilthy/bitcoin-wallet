@@ -18,7 +18,6 @@ public class AddressBook {
 	public Vector<Address> getAddressConnectList(){
 		Vector<Address> active=getActive();
 		Collections.sort(active, new LastTryComparator());
-		System.out.println("address connect list size:"+active.size());
 		return active;
 	}
 	
@@ -27,12 +26,9 @@ public class AddressBook {
 		Calendar c=Calendar.getInstance();
 		c.add(Calendar.HOUR,-3);
 		java.util.Date threeHoursAgo=c.getTime();
-		System.out.println("three hours ago: "+threeHoursAgo);
 		for(Address a : this.addressList){
-			System.out.println("last seen: "+a.getLastSeen());
 			if(a.getLastSeen().compareTo(threeHoursAgo)>0){
 				active.add(a);
-				System.out.println("active");
 			}
 		}
 		return active;
@@ -40,7 +36,6 @@ public class AddressBook {
 	
 	public synchronized void justSeen(Address a){
 		Address our=findOrCreateAddress(a);
-		System.out.println(a);
 		our.setLastSeen(new java.util.Date());
 	}
 	

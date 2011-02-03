@@ -32,9 +32,15 @@ public class ConnectionHandlerTest extends AndroidTestCase {
 	
 	public void testDownloadHeaders() throws InterruptedException{
 		ch.run();
-		Thread.sleep(30 * 1000);
+		System.out.println("after run");
+		Thread.sleep(120 * 1000);
+		System.out.println();
+		System.out.println();
+		System.out.println("connections: "+ch.getConnectionsNumber());
+		System.out.println();
+		System.out.println();
 		ch.getInitialHeaders();
-		Thread.sleep(30 * 1000);
+		Thread.sleep(120 * 1000);
 	}
 	
 	

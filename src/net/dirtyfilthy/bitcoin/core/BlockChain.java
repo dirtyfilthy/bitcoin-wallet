@@ -36,7 +36,7 @@ public class BlockChain {
 	
 	
 	
-	public BlockNode addBlock(Block block) throws InvalidBlockException{
+	public synchronized BlockNode addBlock(Block block) throws InvalidBlockException{
 		if(!block.validProofOfWork()){
 			throw new InvalidBlockException("Invalid proof of work");
 		}

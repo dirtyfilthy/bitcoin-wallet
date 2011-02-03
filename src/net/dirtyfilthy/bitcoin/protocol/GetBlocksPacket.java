@@ -5,10 +5,11 @@ import java.io.IOException;
 import java.util.Vector;
 
 import net.dirtyfilthy.bitcoin.core.Address;
+import net.dirtyfilthy.bitcoin.util.MyHex;
 
 public class GetBlocksPacket extends Packet {
 	
-	private Vector<byte[]>startHashes;
+	private Vector<byte[]>startHashes=new Vector<byte[]>();
 	private byte[] endHash=new byte[32];
 	
 	public GetBlocksPacket() {
@@ -34,8 +35,10 @@ public class GetBlocksPacket extends Packet {
 	}
 	
 	public byte[] create(){
+		System.out.println("putting hashes");
 		writeUnsignedVarInt(startHashes.size());
 		for(byte[] hash : startHashes){
+			System.out.println("Sending hash "+MyHex.encode(hash));
 			dataBuffer.put(hash);
 		}
 		dataBuffer.put(endHash);
