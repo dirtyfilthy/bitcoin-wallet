@@ -18,6 +18,7 @@ public class ConnectionHandler {
 	private BlockChain blockChain;
 	private int connectionsToMaintain=5;
 	private MaintainConnectionsThread maintainThread;
+	private boolean ircBootStrap=true;
 	
 	public ConnectionHandler() throws UnknownHostException{
 		this.addressBook=new AddressBook();
@@ -25,6 +26,10 @@ public class ConnectionHandler {
 		this.blockChain=new BlockChain();
 		this.maintainThread=new MaintainConnectionsThread(this);
 	
+	}
+	
+	public void setIrcBootStrap(boolean boot){
+		ircBootStrap=boot;
 	}
 	
 	public void run(){
@@ -39,10 +44,11 @@ public class ConnectionHandler {
 		List<Address> toConnect;
 		Vector<Address> possible=addressBook.getAddressConnectList();
 		possible.removeAll(connections);
-		if(possible.size()<connectionsToAdd){
+		if(possible.size()<connectionsToAdd && ircBootStrap){
 			
 				try {
 					System.out.println("addresses: "+possible.size());
+					
 					bootstrap();
 					possible=addressBook.getAddressConnectList();
 					possible.removeAll(connections);
@@ -66,6 +72,10 @@ public class ConnectionHandler {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public void addAddress(Address a){
+		addressBook.justSeen(a);
 	}
 		
 	public synchronized void getInitialHeaders(){
