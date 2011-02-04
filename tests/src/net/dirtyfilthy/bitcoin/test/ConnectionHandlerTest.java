@@ -2,6 +2,7 @@ package net.dirtyfilthy.bitcoin.test;
 
 import java.net.UnknownHostException;
 
+import net.dirtyfilthy.bitcoin.core.Address;
 import net.dirtyfilthy.bitcoin.protocol.ConnectionHandler;
 import net.dirtyfilthy.bitcoin.protocol.ProtocolVersion;
 import android.test.AndroidTestCase;
@@ -30,7 +31,9 @@ public class ConnectionHandlerTest extends AndroidTestCase {
 		assertEquals(5,ch.getConnectionsNumber());
 	}
 	
-	public void testDownloadHeaders() throws InterruptedException{
+	public void testDownloadHeaders() throws InterruptedException, UnknownHostException{
+		ch.setIrcBootStrap(false);
+		ch.addAddress(new Address("192.168.1.9",8333));
 		ch.run();
 		System.out.println("after run");
 		Thread.sleep(120 * 1000);

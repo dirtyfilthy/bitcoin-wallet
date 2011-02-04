@@ -36,6 +36,7 @@ public class GetBlocksPacket extends Packet {
 	
 	public byte[] create(){
 		System.out.println("putting hashes");
+		dataBuffer.putInt(this.version);
 		writeUnsignedVarInt(startHashes.size());
 		for(byte[] hash : startHashes){
 			System.out.println("Sending hash "+MyHex.encode(hash));
