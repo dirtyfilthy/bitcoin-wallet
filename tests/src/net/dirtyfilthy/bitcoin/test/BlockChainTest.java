@@ -15,15 +15,15 @@ public class BlockChainTest extends AndroidTestCase {
 		
 	}
 	
-	public void testSimpleAddBlock(){
+	public void testSimpleAddBlock() throws InvalidBlockException{
 		Block second=ProtocolVersion.secondBlock();
 		
-		try {
+		//try {
 			bc.addBlock(second);
-		} catch (InvalidBlockException e) {
+		//} catch (InvalidBlockException e) {
 			// TODO Auto-generated catch block
-			fail("Invalid block exception generated");
-		}
+		//	fail("Invalid block exception generated");
+		//}
 	}
 
 }

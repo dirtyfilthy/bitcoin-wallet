@@ -56,8 +56,8 @@ public class Block implements ByteArrayable {
 	}
 	
 	public BigInteger targetHash(){
-		int leftShift=(int) (((bits >> 24) & 0xff)-3)*8;
-		BigInteger base=BigInteger.valueOf(bits & 0xffffff);
+		int leftShift=(int) (((bits >>> 24) & 0xff)-3)*8;
+		BigInteger base=BigInteger.valueOf(bits & 0xffffffL);
 		return base.shiftLeft(leftShift);
 	}
 	

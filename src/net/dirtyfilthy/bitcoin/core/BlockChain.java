@@ -5,6 +5,7 @@ import java.util.Vector;
 import java.math.BigInteger;
 
 import net.dirtyfilthy.bitcoin.protocol.ProtocolVersion;
+import net.dirtyfilthy.bitcoin.util.MyHex;
 public class BlockChain {
 	private HashMap<BigInteger,BlockNode> hashMap=new HashMap<BigInteger,BlockNode>();
 	private BigInteger highestTotalWork=BigInteger.ZERO;
@@ -49,6 +50,8 @@ public class BlockChain {
 		if(prevBn==null){
 			throw new InvalidBlockException("Can't find previous block hash");
 		}
+		System.out.println("target         : "+MyHex.encodePadded(bn.target().toByteArray(),32));
+		System.out.println("expected       : "+MyHex.encodePadded(prevBn.nextDifficulty().toByteArray(),32));
 		if(bn.target().compareTo(prevBn.nextDifficulty())!=0){
 			throw new InvalidBlockException("Invalid difficulty");
 		}

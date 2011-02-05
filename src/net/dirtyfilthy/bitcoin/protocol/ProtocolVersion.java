@@ -16,7 +16,7 @@ import net.dirtyfilthy.bouncycastle.util.encoders.Hex;
 public class ProtocolVersion {
 	public static final byte MAGIC[]={(byte) 0xf9, (byte) 0xbe,(byte) 0xb4,(byte) 0xd9};
 	public static final byte TEST_MAGIC[]={(byte) 0xfa, (byte) 0xbf, (byte) 0xb5, (byte) 0xda }; 
-	private static BigInteger proofOfWorkLimit=new BigInteger("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",16).shiftRight(32);
+	private static BigInteger proofOfWorkLimit=new BigInteger("00000000FFFF0000000000000000000000000000000000000000000000000000",16);
 	static private boolean useTestNet=false;
 	static private final OpCode[] DISABLED_OPCODES={OpCode.OP_SUBSTR,OpCode.OP_LEFT, OpCode.OP_RIGHT, OpCode.OP_INVERT, OpCode.OP_AND, OpCode.OP_OR, 
 		OpCode.OP_XOR, OpCode.OP_2MUL, OpCode.OP_2DIV, OpCode.OP_MUL, OpCode.OP_DIV, OpCode.OP_MOD, OpCode.OP_LSHIFT,OpCode.OP_RSHIFT};

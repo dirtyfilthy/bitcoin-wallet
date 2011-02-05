@@ -19,5 +19,17 @@ public class MyHex {
 	                }
 	        } 
 	    }
+	
+	public static String encodePadded(byte[] bytes, int length){
+		  		String s=encode(bytes);
+		        StringBuffer sb = new StringBuffer(s);
+		        int numZeros = (length*2) - s.length();
+		        while(numZeros-- > 0) { 
+		            sb.insert(0, "0");
+		        }
+		        return sb.toString();
+		   
+
+	}
 
 }
