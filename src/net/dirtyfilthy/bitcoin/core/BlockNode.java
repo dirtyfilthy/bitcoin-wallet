@@ -92,11 +92,11 @@ public class BlockNode {
 		Vector<Long> values=new Vector<Long>();
 		BlockNode current=this;
 		for(int i=0;i<timespan;i++){
+			values.add(new Long(current.getTime()));
 			current=current.prev();
 			if(current==null){
 				break;
-			}
-			values.add(new Long(current.getTime()));
+			}		
 		}
 		Collections.sort(values);
 		return values.get(values.size()/2).longValue();

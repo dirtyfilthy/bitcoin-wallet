@@ -55,7 +55,9 @@ public class BlockChain {
 		if(bn.target().compareTo(prevBn.nextDifficulty())!=0){
 			throw new InvalidBlockException("Invalid difficulty");
 		}
-		if(bn.getTime()>=prevBn.getMedianTimePast()){
+		System.out.println("current time   : "+bn.getTime());
+		System.out.println("prev time      : "+prevBn.getMedianTimePast());
+		if(bn.getTime()<=prevBn.getMedianTimePast()){
 			throw new InvalidBlockException("Incorrect timestamp");
 		}
 		BigInteger totalWork=bn.getTotalWork();
