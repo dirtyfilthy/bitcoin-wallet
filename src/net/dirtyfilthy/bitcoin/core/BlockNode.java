@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Vector;
 
 import net.dirtyfilthy.bitcoin.protocol.ProtocolVersion;
+import net.dirtyfilthy.bitcoin.util.BigIntegerTools;
 
 public class BlockNode {
 	
@@ -42,18 +43,25 @@ public class BlockNode {
 		return prev;
 	}
 	
-	public BigInteger nextDifficulty(){
+	
+	
+
+	
+	public long nextDifficulty(){
 		 long targetTimespan = ProtocolVersion.targetTimespan(); // two weeks
 		 long targetSpacing = ProtocolVersion.targetInterval();
 		 long interval = targetTimespan / targetSpacing;
 		 if(this.prev()==null){
-			 return ProtocolVersion.proofOfWorkLimit();
+			 return BigIntegerTools.compactBigInt(ProtocolVersion.proofOfWorkLimit());
 		 }
 		 if((this.height()+1) % interval != 0){
-			 return this.target();
+			 return this.block.getBits();
 		 }
 		 BlockNode first=this;
 		 for (int i = 0; i<interval-1; i++){
+			 if(first.prev()==null){
+				 break;
+			 }
 			 first=first.prev();
 		 }
 		 long actualTimespan=(this.getTime()-first.getTime())/1000;
@@ -68,7 +76,7 @@ public class BlockNode {
 		 if(nextDifficulty.compareTo(ProtocolVersion.proofOfWorkLimit())>0){
 			 nextDifficulty=ProtocolVersion.proofOfWorkLimit();
 		 }
-		 return nextDifficulty;
+		 return BigIntegerTools.compactBigInt(nextDifficulty);
 	}
 	
 	public long getTime(){

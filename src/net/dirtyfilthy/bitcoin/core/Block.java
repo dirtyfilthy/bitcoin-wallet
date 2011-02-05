@@ -11,6 +11,7 @@ import java.util.Vector;
 
 import net.dirtyfilthy.bitcoin.protocol.Packet;
 import net.dirtyfilthy.bitcoin.protocol.ProtocolVersion;
+import net.dirtyfilthy.bitcoin.util.BigIntegerTools;
 import net.dirtyfilthy.bitcoin.util.QuickHash;
 
 public class Block implements ByteArrayable {
@@ -56,9 +57,7 @@ public class Block implements ByteArrayable {
 	}
 	
 	public BigInteger targetHash(){
-		int leftShift=(int) (((bits >>> 24) & 0xff)-3)*8;
-		BigInteger base=BigInteger.valueOf(bits & 0xffffffL);
-		return base.shiftLeft(leftShift);
+		return BigIntegerTools.uncompactBigInt(bits);
 	}
 	
 	public byte[] toByteArray(){
