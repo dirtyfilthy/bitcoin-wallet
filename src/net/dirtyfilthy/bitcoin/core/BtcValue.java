@@ -10,25 +10,30 @@ public class BtcValue {
 	
 	byte[] bytes=new byte[8];
 	public static final int COIN = 100000000;
-	private long value=0;
+	private BigInteger value=BigInteger.ZERO;
 	
 	
 	
 	public BtcValue(DataInputStream in) throws IOException{
-		value=Long.reverseBytes(in.readLong());
+		ByteBuffer b=ByteBuffer.allocate(9);
+		b.put(0, (byte) 0); // force this to be positive
+		b.putLong(Long.reverseBytes(in.readLong()));
+		value=new BigInteger(b.array());
 	}
 	
 	public BtcValue(long v){
-		value=v;
+		ByteBuffer b=ByteBuffer.allocate(9);
+		b.put(0, (byte) 0); // force this to be positive
+		b.putLong(v);
+		value=new BigInteger(b.array());
 	}
 	
 	BtcValue(){
-		value=0;
 	}
 	
 	public byte[] toByteArray(){
 		ByteBuffer b=ByteBuffer.allocate(8);
-		b.putLong(Long.reverseBytes(value));
+		b.putLong(Long.reverseBytes(value.longValue()));
 		return b.array();
 	}
 

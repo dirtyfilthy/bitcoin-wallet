@@ -12,7 +12,7 @@ public class GetHeadersPacket extends GetBlocksPacket {
 		setCommand("getheaders");
 	}
 
-	public GetHeadersPacket(int ver) {
+	public GetHeadersPacket(long ver) {
 		super(ver);
 		setCommand("getheaders");
 		// TODO Auto-generated constructor stub

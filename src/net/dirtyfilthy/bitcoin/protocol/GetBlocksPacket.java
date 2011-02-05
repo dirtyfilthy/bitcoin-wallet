@@ -17,12 +17,13 @@ public class GetBlocksPacket extends Packet {
 		command="getblocks";
 	}
 
-	public GetBlocksPacket(int ver) {
+	public GetBlocksPacket(long ver) {
 		super(ver);
 		command="getblocks";
 	}
 	
 	public void readData(DataInputStream in) throws IOException{
+		this.version=(long) Integer.reverseBytes(in.readInt()) & 0xffffffffL;
 		int items=(int) Packet.readUnsignedVarInt(in);
 		this.startHashes=new Vector<byte[]>();
 		
@@ -36,7 +37,7 @@ public class GetBlocksPacket extends Packet {
 	
 	public byte[] create(){
 		System.out.println("putting hashes");
-		dataBuffer.putInt(this.version);
+		dataBuffer.putInt((int) this.version);
 		writeUnsignedVarInt(startHashes.size());
 		for(byte[] hash : startHashes){
 			System.out.println("Sending hash "+MyHex.encode(hash));

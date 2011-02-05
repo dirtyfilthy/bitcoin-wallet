@@ -24,9 +24,9 @@ public class Packet  implements ByteArrayable {
 	public static final int HEADER_LENGTH=24;
 	protected int packetType; 
 	protected String command;
-	protected int version;
+	protected long version;
 	ByteBuffer dataBuffer;
-	protected int dataSizeFromHeader=0;
+	protected long dataSizeFromHeader=0;
 	protected byte[] checksumFromHeader={0,0,0,0};
 	protected 
 	
@@ -38,17 +38,17 @@ public class Packet  implements ByteArrayable {
 	}
 	
 
-	Packet(int ver){
+	Packet(long version2){
 		dataBuffer=ByteBuffer.allocate(64000);
 		dataBuffer.order(ByteOrder.LITTLE_ENDIAN);
-		setVersion(ver);
+		setVersion(version2);
 		packetType=0;
 	}
 	
-	Packet(int ver, String command){
+	Packet(long version2, String command){
 		dataBuffer=ByteBuffer.allocate(64000);
 		dataBuffer.order(ByteOrder.LITTLE_ENDIAN);
-		setVersion(ver);
+		setVersion(version2);
 		setCommand(command);
 		packetType=0;
 	}
@@ -77,11 +77,11 @@ public class Packet  implements ByteArrayable {
 	
 	
 	
-	public int getVersion() {
+	public long getVersion() {
 		return version;
 	}
 
-	public void setVersion(int version) {
+	public void setVersion(long version) {
 		this.version = version;
 	}
 	
@@ -95,7 +95,7 @@ public class Packet  implements ByteArrayable {
 			i=(((int) Short.reverseBytes(in.readShort())) & 0xffff);
 		}
 		else if(value==254){
-			i=Integer.reverseBytes(in.readInt()) & (long) 0xffffffff;
+			i=Integer.reverseBytes(in.readInt()) & (long) 0xffffffffL;
 		}
 		else if(value==255){
 			i=Long.reverseBytes(in.readLong());
@@ -153,7 +153,7 @@ public class Packet  implements ByteArrayable {
 		dataBuffer.put(field);
 	}
 	
-	public int dataSize(){
+	public long dataSize(){
 		if(dataBuffer.position()==0){
 			return getDataSizeFromHeader();
 		}
@@ -231,7 +231,7 @@ public class Packet  implements ByteArrayable {
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		buffer.put(ProtocolVersion.magic());
 		writeFixedStringField(buffer, command,12);
-		buffer.putInt((int) this.dataSize() & 0xffffffff);
+		buffer.putInt((int) this.dataSize());
 		if(shouldChecksum()){
 			buffer.put(this.checksum());
 		}
@@ -301,7 +301,7 @@ public class Packet  implements ByteArrayable {
 		int nullPos = command.indexOf(0);  
 		command = (nullPos < 0) ? command : command.substring(0, nullPos);  
 		System.out.println("command '"+command+"'");
-		dataSizeFromHeader=Integer.reverseBytes(in.readInt());
+		dataSizeFromHeader=(long) Integer.reverseBytes(in.readInt()) & 0xffffffffL;
 		System.out.println("datasize "+dataSizeFromHeader);
 		if(shouldChecksum()){
 			System.out.println("readingChecksum");
@@ -311,7 +311,7 @@ public class Packet  implements ByteArrayable {
 		System.out.println(checksumFromHeader[0]);
 	}
 	
-	public int getDataSizeFromHeader(){
+	public long getDataSizeFromHeader(){
 		return this.dataSizeFromHeader;
 	}
 	
@@ -325,7 +325,7 @@ public class Packet  implements ByteArrayable {
 	public void readExternal(DataInputStream in) throws IOException {
 		
 		readHeader(in);
-		byte rawData[]=new byte[this.dataSizeFromHeader];
+		byte rawData[]=new byte[(int) this.dataSizeFromHeader];
 		in.readFully(rawData);
 		
 		// VALIDATE CHECKSUM: version packets don't contain checksums, neither do packets with versions < 209

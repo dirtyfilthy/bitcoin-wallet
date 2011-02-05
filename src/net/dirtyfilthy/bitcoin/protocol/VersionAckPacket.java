@@ -7,7 +7,7 @@ public class VersionAckPacket extends Packet {
 		command="verack";	
 	}
 
-	public VersionAckPacket(int ver){
+	public VersionAckPacket(long ver){
 		super();
 		command="verack";
 		version=ver;

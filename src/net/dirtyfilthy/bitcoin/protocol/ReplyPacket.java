@@ -17,7 +17,7 @@ public class ReplyPacket extends Packet {
 		
 	}
 
-	public ReplyPacket(int ver) {
+	public ReplyPacket(long ver) {
 		super(ver,"reply");
 		setReplyCode(DENIED);
 	}

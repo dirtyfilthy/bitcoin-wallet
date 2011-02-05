@@ -9,7 +9,7 @@ public class BlockPacket extends Packet {
 	
 	private Block block; 
 	
-	public BlockPacket(int ver) {
+	public BlockPacket(long ver) {
 		super(ver,"block");
 	}
 	

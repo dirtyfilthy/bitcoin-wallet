@@ -5,14 +5,14 @@ import java.io.IOException;
 
 public class PacketFactory {
 	
-	private int version;
+	private long version;
 	private int packetType=0;
 
-	public void setVersion(int version) {
-		this.version = version;
+	public void setVersion(long negotiatedVersion) {
+		this.version = negotiatedVersion;
 	}
 
-	public int getVersion() {
+	public long getVersion() {
 		return version;
 	}
 	
@@ -20,7 +20,7 @@ public class PacketFactory {
 		this.version=ProtocolVersion.version();
 	}
 	
-	PacketFactory(int version){ 
+	PacketFactory(long version){ 
 		this.version=version;
 		
 	}
@@ -78,5 +78,7 @@ public class PacketFactory {
 	public int getPacketType() {
 		return packetType;
 	}
+
+	
 
 }

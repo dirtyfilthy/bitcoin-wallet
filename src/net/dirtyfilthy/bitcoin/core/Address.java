@@ -43,14 +43,14 @@ public class Address implements ByteArrayable {
 	
 	public Address(DataInputStream in, boolean timestamp) throws IOException {
 		if(timestamp){
-			lastSeen=new Date((long) (in.readInt()*1000));
+			lastSeen=new Date(((long) Integer.reverseBytes(in.readInt()) & 0xffffffffL)*1000);
 		}
 		services=Long.reverseBytes(in.readLong());
 		byte[] ip=new byte[4];
 		in.skip(12); // reserved
 		in.read(ip);
 		setIp(InetAddress.getByAddress(ip));
-		port=Short.reverseBytes(in.readShort());
+		port=(int) Short.reverseBytes(in.readShort()) & 0xff;
 		
 	}
 

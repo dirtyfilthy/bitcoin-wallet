@@ -19,10 +19,10 @@ public class TxIn  implements ByteArrayable, Cloneable {
 	public TxIn(DataInputStream in) throws IOException{
 		in.read(outpointHash);
 		System.out.println("outpoint: "+MyHex.encode(outpointHash));
-		this.outpointIndex=((long) Integer.reverseBytes(in.readInt())) & 0xffffffff;
+		this.outpointIndex=((long) Integer.reverseBytes(in.readInt())) & 0xffffffffL;
 		System.out.println("index: "+outpointIndex);
 		this.script=new Script(in);
-		this.sequence=((long) Integer.reverseBytes(in.readInt())) & 0xffffffff;
+		this.sequence=((long) Integer.reverseBytes(in.readInt())) & 0xffffffffL;
 	}
 	
 	public TxIn() {

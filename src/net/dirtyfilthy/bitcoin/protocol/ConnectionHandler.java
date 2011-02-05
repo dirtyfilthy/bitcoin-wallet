@@ -128,7 +128,7 @@ public class ConnectionHandler {
 		switch(p.packetType()){
 		case VERSION:
 			VersionPacket v=(VersionPacket) p;
-			int ourVersion=ProtocolVersion.version(), theirVersion=v.getVersion(), negotiatedVersion;
+			long ourVersion=ProtocolVersion.version(), theirVersion=v.getVersion(), negotiatedVersion;
 			negotiatedVersion=theirVersion<ourVersion ? theirVersion : ourVersion;
 			c.setVersion(negotiatedVersion);
 			c.hasReceivedVersion(true);

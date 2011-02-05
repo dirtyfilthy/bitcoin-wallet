@@ -7,7 +7,7 @@ public class GetDataPacket extends InventoryPacket {
 		command="getdata";
 	}
 
-	public GetDataPacket(int ver) {
+	public GetDataPacket(long ver) {
 		super(ver);
 		command="getdata";
 		// TODO Auto-generated constructor stub

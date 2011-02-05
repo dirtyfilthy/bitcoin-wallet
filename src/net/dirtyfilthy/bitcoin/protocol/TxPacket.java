@@ -9,7 +9,7 @@ public class TxPacket extends Packet {
 	
 	private Tx tx;
 
-	public TxPacket(int ver) {
+	public TxPacket(long ver) {
 		super(ver,"tx");
 	} 
 	

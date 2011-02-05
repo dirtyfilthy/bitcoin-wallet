@@ -7,7 +7,7 @@ public class PingPacket extends Packet {
 		command="ping";
 	}
 
-	public PingPacket(int ver) {
+	public PingPacket(long ver) {
 		super(ver,"ping");
 	}
 

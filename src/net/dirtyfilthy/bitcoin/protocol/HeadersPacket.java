@@ -10,7 +10,7 @@ public class HeadersPacket extends Packet {
 	
 	Vector<Block> headers=new Vector<Block>();
 	
-	public HeadersPacket(int ver) {
+	public HeadersPacket(long ver) {
 		super(ver, "headers");
 	}
 	

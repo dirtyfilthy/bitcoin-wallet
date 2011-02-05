@@ -17,7 +17,7 @@ public class VersionPacket extends Packet {
 	private Address remoteAddress;
 	private Address fromAddress;
 	
-	public VersionPacket(int ver) {
+	public VersionPacket(long ver) {
 		super(ver,"version");
 		subversion="";
 		services=1;
@@ -38,9 +38,9 @@ public class VersionPacket extends Packet {
 	//}
 	
 	public byte[] create(){
-		dataBuffer.putInt(getVersion());
+		dataBuffer.putInt((int) getVersion());
 		dataBuffer.putLong(services);
-		dataBuffer.putLong(getTimeStamp().getTime());
+		dataBuffer.putLong(getTimeStamp().getTime() / 1000);
 		dataBuffer.put(remoteAddress.toByteArray(false));
 		if(version>=106){
 			dataBuffer.put(fromAddress.toByteArray(false));
@@ -48,7 +48,7 @@ public class VersionPacket extends Packet {
 			writeVariableStringField(subversion);
 		}
 		if(version>=209){
-			dataBuffer.putInt((int) (startingHeight & 0xffffffff)); 
+			dataBuffer.putInt((int) startingHeight); 
 		}
 		return toByteArray();
 	}
@@ -96,16 +96,16 @@ public class VersionPacket extends Packet {
 	}
 	
 	protected long readUnsignedInt(DataInputStream in) throws IOException{
-		long ret=Integer.reverseBytes(in.readInt()) & 0xffffffff;
+		long ret=(long) Integer.reverseBytes(in.readInt()) & 0xffffffffL;
 		return ret;
 	}
 	
 	protected void readData(DataInputStream in) throws IOException {
-		this.setVersion(Integer.reverseBytes(in.readInt()));
+		this.setVersion((long) Integer.reverseBytes(in.readInt()) & 0xffffffffL);
 		System.out.println("version "+getVersion());
 		this.setServices(Long.reverseBytes(in.readLong()));
 		System.out.println("services "+getServices());
-		this.setTimeStamp(in.readLong());
+		this.setTimeStamp(Long.reverseBytes(in.readLong())*1000);
 		this.setRemoteAddress(new Address(in,false));
 		if(version>=106){
 			this.setFromAddress(new Address(in,false));

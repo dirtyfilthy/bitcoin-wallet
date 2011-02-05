@@ -17,7 +17,7 @@ public class Connection implements Runnable {
 	private DataOutputStream out;
 	private PacketFactory packetFactory;
 	private ConnectionHandler connectionHandler;
-	private int version=ProtocolVersion.version();
+	private long version=ProtocolVersion.version();
 	private boolean hasReceivedVersion=false;
 	private boolean hasReceivedVerack=false;
 	private Thread mainLoop;
@@ -97,12 +97,12 @@ public class Connection implements Runnable {
 		}
 	}
 
-	public void setVersion(int version) {
-		this.version = version;
-		packetFactory.setVersion(version);
+	public void setVersion(long negotiatedVersion) {
+		this.version = negotiatedVersion;
+		packetFactory.setVersion(negotiatedVersion);
 	}
 
-	public int getVersion() {
+	public long getVersion() {
 		return version;
 	}
 

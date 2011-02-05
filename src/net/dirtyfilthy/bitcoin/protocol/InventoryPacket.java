@@ -12,7 +12,7 @@ public class InventoryPacket extends Packet {
 		command="inv";
 	}
 
-	public InventoryPacket(int ver) {
+	public InventoryPacket(long ver) {
 		super(ver,"inv");
 	}
 

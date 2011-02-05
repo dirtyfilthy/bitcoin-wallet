@@ -7,7 +7,7 @@ public class GetAddressPacket extends Packet {
 		command="getaddr";
 	}
 
-	public GetAddressPacket(int ver) {
+	public GetAddressPacket(long ver) {
 		super(ver,"getaddr");
 	}
 

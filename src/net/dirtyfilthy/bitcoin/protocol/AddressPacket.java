@@ -14,8 +14,8 @@ public class AddressPacket extends Packet {
 		command="addr";
 	}
 
-	public AddressPacket(int ver) {
-		super(ver,"addr");
+	public AddressPacket(long version) {
+		super(version,"addr");
 	}
 
 	public void setAddresses(Address[] addresses) {

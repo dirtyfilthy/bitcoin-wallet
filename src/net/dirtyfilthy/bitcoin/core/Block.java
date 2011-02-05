@@ -30,12 +30,12 @@ public class Block implements ByteArrayable {
 	}
 	
 	public Block(DataInputStream in, boolean includeTransactions) throws IOException{
-		this.blockVersion=((long) Integer.reverseBytes(in.readInt())) & 0xffffffff;
+		this.blockVersion=((long) Integer.reverseBytes(in.readInt())) & 0xffffffffL;
 		in.readFully(previousHash);
 		in.readFully(merkleRoot);
-		this.timestamp=new java.util.Date(((long) Integer.reverseBytes(in.readInt()) & 0xffffffff)*1000);
-		this.bits=((long) Integer.reverseBytes(in.readInt())) & 0xffffffff;
-		this.nonce=((long) Integer.reverseBytes(in.readInt())) & 0xffffffff;
+		this.timestamp=new java.util.Date((((long) Integer.reverseBytes(in.readInt())) & 0xffffffffL)*1000);
+		this.bits=((long) Integer.reverseBytes(in.readInt())) & 0xffffffffL;
+		this.nonce=((long) Integer.reverseBytes(in.readInt())) & 0xffffffffL;
 		
 		transactions=new Vector<Tx>();
 		if(includeTransactions){
