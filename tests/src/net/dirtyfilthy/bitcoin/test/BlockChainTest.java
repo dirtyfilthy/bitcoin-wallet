@@ -3,6 +3,7 @@ package net.dirtyfilthy.bitcoin.test;
 import net.dirtyfilthy.bitcoin.core.Block;
 import net.dirtyfilthy.bitcoin.core.BlockChain;
 import net.dirtyfilthy.bitcoin.core.InvalidBlockException;
+import net.dirtyfilthy.bitcoin.core.OrphanBlockException;
 import net.dirtyfilthy.bitcoin.protocol.ProtocolVersion;
 import android.test.AndroidTestCase;
 
@@ -15,7 +16,7 @@ public class BlockChainTest extends AndroidTestCase {
 		
 	}
 	
-	public void testSimpleAddBlock() throws InvalidBlockException{
+	public void testSimpleAddBlock() throws InvalidBlockException, OrphanBlockException{
 		Block second=ProtocolVersion.secondBlock();
 		
 		//try {

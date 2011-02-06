@@ -100,7 +100,7 @@ public class Block implements ByteArrayable {
 		if(h[0]!=0){
 			return false;
 		}
-		return (new BigInteger(h).compareTo(this.targetHash())<0);
+		return (new BigInteger(h).compareTo(this.targetHash())<=0);
 	}
 	
 	

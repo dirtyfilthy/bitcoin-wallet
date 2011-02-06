@@ -8,6 +8,7 @@ import net.dirtyfilthy.bitcoin.protocol.ProtocolVersion;
 import net.dirtyfilthy.bitcoin.util.MyHex;
 public class BlockChain {
 	private HashMap<BigInteger,BlockNode> hashMap=new HashMap<BigInteger,BlockNode>();
+	private HashMap<BigInteger,Vector<Block>> orphanBlocks=new HashMap<BigInteger,Vector<Block>>();
 	private BigInteger highestTotalWork=BigInteger.ZERO;
 	private BlockNode topBlockNode=null;
 	private Vector<BlockNode> longestChain=null;
@@ -37,34 +38,69 @@ public class BlockChain {
 	
 	
 	
-	public synchronized BlockNode addBlock(Block block) throws InvalidBlockException{
+	public synchronized BlockNode addBlock(Block block) throws InvalidBlockException, OrphanBlockException{
 		if(!block.validProofOfWork()){
+			System.out.println("FAILED PROOF OF WORK");
+			System.out.println("bits   :"+Integer.toHexString((int) block.getBits()));
+			System.out.println("bits %d:"+block.getBits());
+			System.out.println("hash   :"+MyHex.encodePadded(block.hash(), 32));
+			System.out.println("target :"+MyHex.encodePadded(block.targetHash().toByteArray(), 32));
+			System.out.println("height :"+topBlockNode.height());
 			throw new InvalidBlockException("Invalid proof of work");
 		}
 		BlockNode bn=new BlockNode(block);
 		if(hashMap.containsKey(bn.bigIntegerHash())){
 			throw new InvalidBlockException("Already added");
 		}
-		
-		BlockNode prevBn=hashMap.get(bn.previousBigIntegerHash());
+		BigInteger prevHash=bn.previousBigIntegerHash();
+		BlockNode prevBn=hashMap.get(prevHash);
 		if(prevBn==null){
-			throw new InvalidBlockException("Can't find previous block hash");
+			if(orphanBlocks.containsKey(prevHash)){
+				orphanBlocks.get(prevHash).add(block);
+			}
+			else{
+				Vector<Block >vb=new Vector<Block>();
+				orphanBlocks.put(prevHash,vb);
+				vb.add(block);
+			}
+			throw new OrphanBlockException("Can't find previous block hash");
 		}
 		if(bn.block().getBits()!=prevBn.nextDifficulty()){
 			throw new InvalidBlockException("Invalid difficulty");
 		}
-		System.out.println("current time   : "+bn.getTime());
-		System.out.println("prev time      : "+prevBn.getMedianTimePast());
 		if(bn.getTime()<=prevBn.getMedianTimePast()){
 			throw new InvalidBlockException("Incorrect timestamp");
 		}
+		
+	
+	
+		bn.setPrev(prevBn);
 		BigInteger totalWork=bn.getTotalWork();
 		if(totalWork.compareTo(highestTotalWork)>0){
 			highestTotalWork=totalWork;
+			if(prevBn!=topBlockNode){
+				// reorganize
+			}
 			topBlockNode=bn;
 			longestChain=bn.chain();
 		}
-		bn.setPrev(prevBn);
+		if(orphanBlocks.containsKey(bn.bigIntegerHash())){
+			Vector<Block> toAdd=orphanBlocks.get(bn.bigIntegerHash());
+			orphanBlocks.remove(bn.bigIntegerHash());
+			for(Block b : toAdd){
+				
+				// don't catch OrphanBlockExceptions here, they should never occur
+				
+				try{
+					this.addBlock(b);
+				}
+				catch(InvalidBlockException e){
+					// ignore
+					continue;
+				}
+			}
+		}
+		
 		return bn;
 	}
 	

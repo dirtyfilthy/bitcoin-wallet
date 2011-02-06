@@ -30,6 +30,7 @@ public class HeadersPacket extends Packet {
 	public void readData(DataInputStream in) throws IOException{
 		headers.clear();
 		int items=(int) readUnsignedVarInt(in);
+		System.out.println("header items :"+items);
 		for(int i=0;i<items;i++){
 			headers.add(new Block(in,false));
 		}

@@ -36,7 +36,7 @@ public class ConnectionHandlerTest extends AndroidTestCase {
 		ch.addAddress(new Address("192.168.1.9",8333));
 		ch.run();
 		System.out.println("after run");
-		Thread.sleep(120 * 1000);
+		Thread.sleep(20 * 1000);
 		System.out.println();
 		System.out.println();
 		System.out.println("connections: "+ch.getConnectionsNumber());
