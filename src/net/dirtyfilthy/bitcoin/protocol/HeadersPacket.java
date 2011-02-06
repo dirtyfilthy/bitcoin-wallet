@@ -32,7 +32,11 @@ public class HeadersPacket extends Packet {
 		int items=(int) readUnsignedVarInt(in);
 		System.out.println("header items :"+items);
 		for(int i=0;i<items;i++){
-			headers.add(new Block(in,false));
+			
+			// SER_BLOCKHEADERONLY is defined in original but only used for disk access
+			// we need to get the (always zero) txCount so we pass in includeTransactions=true
+			
+			headers.add(new Block(in,true));
 		}
 	}
 	

@@ -23,6 +23,10 @@ public class BlockChain {
 		longestChain=genesisNode.chain();
 	}
 	
+	public BlockNode topBlockNode(){
+		return topBlockNode;
+	}
+	
 	public Block topBlock(){
 		if(topBlockNode==null){
 			return null;
@@ -75,6 +79,7 @@ public class BlockChain {
 	
 	
 		bn.setPrev(prevBn);
+		hashMap.put(bn.bigIntegerHash(), bn);
 		BigInteger totalWork=bn.getTotalWork();
 		if(totalWork.compareTo(highestTotalWork)>0){
 			highestTotalWork=totalWork;
