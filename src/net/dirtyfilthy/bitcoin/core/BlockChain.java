@@ -11,7 +11,6 @@ public class BlockChain {
 	private HashMap<BigInteger,Vector<Block>> orphanBlocks=new HashMap<BigInteger,Vector<Block>>();
 	private BigInteger highestTotalWork=BigInteger.ZERO;
 	private BlockNode topBlockNode=null;
-	private Vector<BlockNode> longestChain=null;
 	
 	
 	public BlockChain(){
@@ -20,7 +19,6 @@ public class BlockChain {
 		hashMap.put(genesisNode.bigIntegerHash(), genesisNode);
 		highestTotalWork=genesisNode.getTotalWork();
 		topBlockNode=genesisNode;
-		longestChain=genesisNode.chain();
 	}
 	
 	public BlockNode topBlockNode(){
@@ -87,7 +85,6 @@ public class BlockChain {
 				// reorganize
 			}
 			topBlockNode=bn;
-			longestChain=bn.chain();
 		}
 		if(orphanBlocks.containsKey(bn.bigIntegerHash())){
 			Vector<Block> toAdd=orphanBlocks.get(bn.bigIntegerHash());
@@ -105,7 +102,7 @@ public class BlockChain {
 				}
 			}
 		}
-		
+		System.out.println("New height "+topBlockNode.height());
 		return bn;
 	}
 	
