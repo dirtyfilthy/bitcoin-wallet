@@ -58,10 +58,10 @@ public class QuickHash {
 		   int right = b.length-1; // index of rightmost element
 		  
 		   while (left < right) {
-		      // exchange the left and right elements
-		      byte temp = b[left]; 
-		      b[left]  = b[right]; 
-		      b[right] = temp;
+		      // exchange the left and right elements, the old xor byte swap
+		      b[left]  = (byte) (b[left] ^ b[right]); 
+		      b[right] = (byte) (b[left] ^ b[right]); 
+		      b[left]  = (byte) (b[left] ^ b[right]); 
 		     
 		      // move the bounds toward the center
 		      left++;

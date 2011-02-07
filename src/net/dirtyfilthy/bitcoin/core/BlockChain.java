@@ -16,7 +16,7 @@ public class BlockChain {
 	public BlockChain(){
 		Block genesis=ProtocolVersion.genesisBlock();
 		BlockNode genesisNode=new BlockNode(genesis);
-		hashMap.put(genesisNode.bigIntegerHash(), genesisNode);
+		hashMap.put(genesis.bigIntegerHash(), genesisNode);
 		highestTotalWork=genesisNode.getTotalWork();
 		topBlockNode=genesisNode;
 	}
@@ -33,8 +33,7 @@ public class BlockChain {
 	}
 	
 	public boolean isKnown(Block block){
-		BlockNode bn=new BlockNode(block);
-		return hashMap.containsKey(bn.bigIntegerHash());
+		return hashMap.containsKey(block.hash());
 	}
 	
 	
@@ -50,18 +49,19 @@ public class BlockChain {
 			System.out.println("height :"+topBlockNode.height());
 			throw new InvalidBlockException("Invalid proof of work");
 		}
-		BlockNode bn=new BlockNode(block);
-		if(hashMap.containsKey(bn.bigIntegerHash())){
+		
+		if(hashMap.containsKey(block.bigIntegerHash())){
 			throw new InvalidBlockException("Already added");
 		}
-		BigInteger prevHash=bn.previousBigIntegerHash();
+		BlockNode bn=new BlockNode(block);
+		BigInteger prevHash=block.previousBigIntegerHash();
 		BlockNode prevBn=hashMap.get(prevHash);
 		if(prevBn==null){
 			if(orphanBlocks.containsKey(prevHash)){
 				orphanBlocks.get(prevHash).add(block);
 			}
 			else{
-				Vector<Block >vb=new Vector<Block>();
+				Vector<Block> vb=new Vector<Block>();
 				orphanBlocks.put(prevHash,vb);
 				vb.add(block);
 			}
@@ -77,7 +77,7 @@ public class BlockChain {
 	
 	
 		bn.setPrev(prevBn);
-		hashMap.put(bn.bigIntegerHash(), bn);
+		hashMap.put(block.bigIntegerHash(), bn);
 		BigInteger totalWork=bn.getTotalWork();
 		if(totalWork.compareTo(highestTotalWork)>0){
 			highestTotalWork=totalWork;
@@ -86,9 +86,9 @@ public class BlockChain {
 			}
 			topBlockNode=bn;
 		}
-		if(orphanBlocks.containsKey(bn.bigIntegerHash())){
-			Vector<Block> toAdd=orphanBlocks.get(bn.bigIntegerHash());
-			orphanBlocks.remove(bn.bigIntegerHash());
+		if(orphanBlocks.containsKey(block.bigIntegerHash())){
+			Vector<Block> toAdd=orphanBlocks.get(block.bigIntegerHash());
+			orphanBlocks.remove(block.bigIntegerHash());
 			for(Block b : toAdd){
 				
 				// don't catch OrphanBlockExceptions here, they should never occur

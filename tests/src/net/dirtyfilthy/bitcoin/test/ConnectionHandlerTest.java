@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import net.dirtyfilthy.bitcoin.core.Address;
 import net.dirtyfilthy.bitcoin.protocol.ConnectionHandler;
 import net.dirtyfilthy.bitcoin.protocol.ProtocolVersion;
+import android.os.Debug;
 import android.test.AndroidTestCase;
 
 public class ConnectionHandlerTest extends AndroidTestCase {
@@ -43,6 +44,7 @@ public class ConnectionHandlerTest extends AndroidTestCase {
 		System.out.println();
 		System.out.println();
 		ch.getInitialHeaders();
+		
 		Thread.sleep(120 * 1000);
 	}
 	

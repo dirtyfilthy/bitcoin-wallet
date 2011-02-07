@@ -1,6 +1,8 @@
 package net.dirtyfilthy.bitcoin.core;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -24,10 +26,27 @@ public class Block implements ByteArrayable {
 	private byte hash[];
 	private Vector<Tx> transactions=new Vector<Tx>();
 	private boolean headersOnly=false;
+	private BigInteger bigIntegerHash;
+	private BigInteger previousBigIntegerHash;
 	
 	
 	public Block(){
 		this.blockVersion=1;
+	}
+	
+	public BigInteger bigIntegerHash(){
+		if(bigIntegerHash==null){
+			bigIntegerHash=new BigInteger(this.hash());
+		}
+		return bigIntegerHash;
+	}
+	
+	public BigInteger previousBigIntegerHash(){
+		if(previousBigIntegerHash==null){
+			previousBigIntegerHash=new BigInteger(this.previousHash);
+			
+		}
+		return previousBigIntegerHash;
 	}
 	
 	public Block(DataInputStream in, boolean includeTransactions) throws IOException{
@@ -65,26 +84,27 @@ public class Block implements ByteArrayable {
 	}
 	
 	public byte[] toByteArray(boolean includeTransactions){
-		ByteBuffer dataBuffer=ByteBuffer.allocate(700000);
-		dataBuffer.order(ByteOrder.LITTLE_ENDIAN);
-		dataBuffer.putInt((int) this.blockVersion);
-		dataBuffer.put(this.previousHash);
-		dataBuffer.put(this.merkleRoot);
-		dataBuffer.putInt((int) (this.timestamp.getTime()/1000));
-		dataBuffer.putInt((int) this.bits);
-		dataBuffer.putInt((int) this.nonce);
+		try{
+		ByteArrayOutputStream byteOut=new ByteArrayOutputStream();
+		DataOutputStream dataOut=new DataOutputStream(byteOut);
+		dataOut.writeInt(Integer.reverseBytes((int) this.blockVersion));
+		dataOut.write(this.previousHash);
+		dataOut.write(this.merkleRoot);
+		dataOut.writeInt(Integer.reverseBytes((int) (this.timestamp.getTime()/1000)));
+		dataOut.writeInt(Integer.reverseBytes((int) this.bits));
+		dataOut.writeInt(Integer.reverseBytes((int) this.nonce));
 		if(includeTransactions){
-			dataBuffer.put(Packet.createUnsignedVarInt(transactions.size()));
+			dataOut.write(Packet.createUnsignedVarInt(transactions.size()));
 			for(Tx tx : transactions){
-				dataBuffer.put(tx.toByteArray());
+				dataOut.write(tx.toByteArray());
 			}
 		}
-		byte[] dataContents=new byte[dataBuffer.position()];
-		ByteBuffer slicedBuffer=(ByteBuffer) dataBuffer.duplicate();
-		slicedBuffer.rewind();
-		slicedBuffer.limit(dataBuffer.position());
-		slicedBuffer.get(dataContents);
-		return dataContents;
+	
+		return byteOut.toByteArray();
+		}
+		catch(IOException e){
+			throw new RuntimeException(e);
+		}
 	}
 	
 	public byte[] hash(){

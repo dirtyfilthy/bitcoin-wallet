@@ -9,8 +9,7 @@ import net.dirtyfilthy.bitcoin.util.BigIntegerTools;
 
 public class BlockNode {
 	
-	private BigInteger bigIntegerHash;
-	private BigInteger previousBigIntegerHash;
+
 	private Block block;
 	private BlockNode next;
 	private BlockNode prev;
@@ -19,8 +18,7 @@ public class BlockNode {
 	
 	public BlockNode(Block block){
 		this.block=block;
-		bigIntegerHash=new BigInteger(block.hash());
-		previousBigIntegerHash=new BigInteger(block.getPreviousHash());
+	
 	}
 	
 	public Block block(){
@@ -57,6 +55,7 @@ public class BlockNode {
 		 if((this.height()+1) % interval != 0){
 			 return this.block.getBits();
 		 }
+		
 		 BlockNode first=this;
 		 for (int i = 0; i<interval-1; i++){
 			 if(first.prev()==null){
@@ -97,17 +96,34 @@ public class BlockNode {
 	
 	public long getMedianTimePast(){
 		int timespan=ProtocolVersion.medianTimeSpan();
-		Vector<Long> values=new Vector<Long>();
+		long time;
+		long temp;
+		long[] values=new long[timespan];
 		BlockNode current=this;
+		int j;
+		// insertion sort this motherfucker
+		
 		for(int i=0;i<timespan;i++){
-			values.add(new Long(current.getTime()));
+			time=current.getTime();
 			current=current.prev();
 			if(current==null){
+				timespan=i+1;
 				break;
-			}		
+			}
+			values[i]=time;
+			if(i==0){
+				continue;
+			}
+			
+			for (j = i; j > 0; j--) {
+	            if (values[j-1] > values[j]) {
+	               temp = values[j];
+	               values[j] = values[j-1];
+	               values[j-1] = temp;
+	            }
+	         }
 		}
-		Collections.sort(values);
-		return values.get(values.size()/2).longValue();
+		return values[timespan/2];
 	}
 	
 	public BigInteger target(){
@@ -137,13 +153,5 @@ public class BlockNode {
 		return totalWork;
 	}
 	
-	
-	public BigInteger bigIntegerHash(){
-		return this.bigIntegerHash;
-	}
-	
-	public BigInteger previousBigIntegerHash(){
-		return this.previousBigIntegerHash;
-	}
 	
 }
