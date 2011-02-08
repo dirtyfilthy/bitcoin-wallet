@@ -68,6 +68,13 @@ public class BlockChain {
 			throw new OrphanBlockException("Can't find previous block hash");
 		}
 		if(bn.block().getBits()!=prevBn.nextDifficulty()){
+			System.out.println("INVALID DIFFICULTY WORK");
+			System.out.println("bits   :"+Integer.toHexString((int) block.getBits()));
+			System.out.println("next   :"+Integer.toHexString((int) prevBn.nextDifficulty()));
+			System.out.println("bits %d:"+block.getBits());
+			System.out.println("hash   :"+MyHex.encodePadded(block.hash(), 32));
+			System.out.println("target :"+MyHex.encodePadded(block.targetHash().toByteArray(), 32));
+			System.out.println("height :"+topBlockNode.height());
 			throw new InvalidBlockException("Invalid difficulty");
 		}
 		if(bn.getTime()<=prevBn.getMedianTimePast()){
@@ -102,7 +109,9 @@ public class BlockChain {
 				}
 			}
 		}
-		System.out.println("New height "+topBlockNode.height());
+		if(topBlockNode.height() % 100 == 0){
+			System.out.println("New height "+topBlockNode.height());
+		}
 		return bn;
 	}
 	

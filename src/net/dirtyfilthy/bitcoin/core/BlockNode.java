@@ -70,8 +70,8 @@ public class BlockNode {
 		 if (actualTimespan > targetTimespan*4){
 			 actualTimespan = targetTimespan*4;
 		 }
-		 BigInteger nextDifficulty=this.target().multiply(BigInteger.valueOf(targetTimespan));
-		 nextDifficulty=nextDifficulty.divide(BigInteger.valueOf(actualTimespan));
+		 BigInteger nextDifficulty=this.target().multiply(BigInteger.valueOf(actualTimespan));
+		 nextDifficulty=nextDifficulty.divide(BigInteger.valueOf(targetTimespan));
 		 if(nextDifficulty.compareTo(ProtocolVersion.proofOfWorkLimit())>0){
 			 nextDifficulty=ProtocolVersion.proofOfWorkLimit();
 		 }

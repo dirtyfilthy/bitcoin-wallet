@@ -45,7 +45,7 @@ public class ConnectionHandlerTest extends AndroidTestCase {
 		System.out.println();
 		ch.getInitialHeaders();
 		
-		Thread.sleep(120 * 1000);
+		Thread.sleep(1000 * 1000);
 	}
 	
 	
