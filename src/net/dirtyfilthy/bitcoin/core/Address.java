@@ -27,6 +27,7 @@ public class Address implements ByteArrayable {
 		return ip.toString()+":"+port;
 	}
 	
+	
 	public Address(InetAddress ip, int port){
 		dataBuffer=ByteBuffer.allocate(LENGTH);
 		dataBuffer.order(ByteOrder.LITTLE_ENDIAN);

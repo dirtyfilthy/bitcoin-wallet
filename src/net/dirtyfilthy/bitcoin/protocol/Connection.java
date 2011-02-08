@@ -43,6 +43,7 @@ public class Connection implements Runnable {
 		
 	}
 	
+	
 	public Packet createPacket(PacketType type){
 		return packetFactory.create(type);
 	}
@@ -162,6 +163,7 @@ public class Connection implements Runnable {
 					
 					toSend.writeExternal(this.out);
 					System.out.println("sending packet: "+toSend);
+					System.out.println("connection: "+this.c);
 					if(toSend.getCommand().equals("getheaders")){
 						System.out.println("getheaders packet: "+MyHex.encode(toSend.toByteArray()));
 					}

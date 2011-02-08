@@ -37,14 +37,17 @@ public class ConnectionHandler {
 		this.maintainThread.start();
 	}
 	
-	public void maintainConnections(){
+	
+	public synchronized void maintainConnections(){
 		int connectionsToAdd=connectionsToMaintain-connections.size();
 		if(connectionsToAdd<=0){ 
 			return; 
 		}
 		List<Address> toConnect;
 		Vector<Address> possible=addressBook.getAddressConnectList();
-		possible.removeAll(connections);
+		
+		removeConnectionsFromAddressList(connections,possible);
+		
 		if(possible.size()<connectionsToAdd && ircBootStrap){
 			
 				try {
@@ -199,6 +202,12 @@ public class ConnectionHandler {
 
 	public BlockChain getBlockChain() {
 		return blockChain;
+	}
+	
+	private void removeConnectionsFromAddressList(List<Connection> connections, List<Address> addresses){
+		for(Connection c : connections){
+			addresses.remove(c.getAddress());
+		}
 	}
 	
 	private class MaintainConnectionsThread extends Thread {
