@@ -158,15 +158,6 @@ public class BlockChain {
 			time=current.getTime();
 			
 			values[i]=time;
-			current=blockStore.getPrevious(b);
-			if(current==null){
-				timespan=i+1;
-				break;
-			}
-			
-			if(i==0){
-				continue;
-			}
 			
 			for (j = i; j > 0; j--) {
 	            if (values[j-1] > values[j]) {
@@ -175,7 +166,13 @@ public class BlockChain {
 	               values[j-1] = temp;
 	            }
 	         }
+			current=blockStore.getPrevious(current);
+			if(current==null){
+				timespan=i+1;
+				break;
+			}
 		}
+		
 		return values[timespan/2];
 	}
 
