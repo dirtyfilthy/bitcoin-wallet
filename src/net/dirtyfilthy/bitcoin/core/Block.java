@@ -28,6 +28,8 @@ public class Block implements ByteArrayable {
 	private boolean headersOnly=false;
 	private BigInteger bigIntegerHash;
 	private BigInteger previousBigIntegerHash;
+	private int height;
+	private BigInteger totalWork;
 	
 	
 	public Block(){
@@ -67,6 +69,10 @@ public class Block implements ByteArrayable {
 		else{
 			headersOnly=true;
 		}
+	}
+	
+	public long getTime(){
+		return this.timestamp.getTime();
 	}
 	
 	public BigInteger getWork(){
@@ -184,6 +190,22 @@ public class Block implements ByteArrayable {
 
 	public boolean isHeadersOnly() {
 		return headersOnly;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setTotalWork(BigInteger totalWork) {
+		this.totalWork = totalWork;
+	}
+
+	public BigInteger getTotalWork() {
+		return totalWork;
 	}
 	
 	

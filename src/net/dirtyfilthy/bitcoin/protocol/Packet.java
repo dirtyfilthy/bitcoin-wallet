@@ -31,7 +31,7 @@ public class Packet  implements ByteArrayable {
 	protected 
 	
 	Packet(){
-		dataBuffer=ByteBuffer.allocate(64000);
+		dataBuffer=ByteBuffer.allocate(2000);
 		dataBuffer.order(ByteOrder.LITTLE_ENDIAN);
 		setVersion(ProtocolVersion.version());
 		packetType=0;
@@ -39,14 +39,14 @@ public class Packet  implements ByteArrayable {
 	
 
 	Packet(long version2){
-		dataBuffer=ByteBuffer.allocate(64000);
+		dataBuffer=ByteBuffer.allocate(2000);
 		dataBuffer.order(ByteOrder.LITTLE_ENDIAN);
 		setVersion(version2);
 		packetType=0;
 	}
 	
 	Packet(long version2, String command){
-		dataBuffer=ByteBuffer.allocate(64000);
+		dataBuffer=ByteBuffer.allocate(2000);
 		dataBuffer.order(ByteOrder.LITTLE_ENDIAN);
 		setVersion(version2);
 		setCommand(command);

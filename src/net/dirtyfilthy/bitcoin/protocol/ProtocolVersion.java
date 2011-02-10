@@ -38,6 +38,7 @@ public class ProtocolVersion {
 	
 	static public Block genesisBlock(){
 		Block g=new Block();
+		g.setHeight(0);
 		g.setBits(486604799);
 		g.setTimestamp(new java.util.Date(1231006505000L));
 		g.setBlockVersion(1);
