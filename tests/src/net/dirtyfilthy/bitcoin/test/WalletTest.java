@@ -12,16 +12,20 @@ public class WalletTest extends android.test.AndroidTestCase {
 	
 	private Context context;
 	private String db_file;
+	private Wallet w;
 	
 	public void setUp(){
 		context=getContext();
 		db_file="test.db";
+		context.deleteDatabase(db_file);
+		
+		
 	}
 	
 	public void testCreateWallet(){
 		
 		try {
-			Wallet w=new Wallet(context,"test.db","password");
+			w=new Wallet(context,"test.db","password");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -34,7 +38,11 @@ public class WalletTest extends android.test.AndroidTestCase {
 	}
 	
 	public void tearDown(){
-		context.deleteFile(db_file);
+		if(w!=null){
+			w.close();
+		}
+		context.deleteDatabase(db_file);
+		
 	}
 	
 }

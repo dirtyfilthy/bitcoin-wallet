@@ -1,29 +1,52 @@
 package net.dirtyfilthy.bitcoin.test;
 
+import java.io.FileNotFoundException;
 import java.net.UnknownHostException;
+import java.security.KeyStoreException;
 
 import net.dirtyfilthy.bitcoin.core.Address;
 import net.dirtyfilthy.bitcoin.protocol.ConnectionHandler;
 import net.dirtyfilthy.bitcoin.protocol.ProtocolVersion;
+import net.dirtyfilthy.bitcoin.wallet.InvalidPasswordException;
+import net.dirtyfilthy.bitcoin.wallet.Wallet;
+import android.content.Context;
 import android.os.Debug;
 import android.test.AndroidTestCase;
 
 public class ConnectionHandlerTest extends AndroidTestCase {
 	
-	public ConnectionHandler ch;
+	private ConnectionHandler ch;
+	private Context context;
+	private String db_file;
+	private Wallet wallet;
 	
 	public void setUp(){
 		ProtocolVersion.useTestNet(false);
+		
+		
+		context=getContext();
+		db_file="test.db";
+		context.deleteDatabase(db_file);
 		try {
-			ch=new ConnectionHandler();
-		} catch (UnknownHostException e) {
+			wallet=new Wallet(context,"test.db","password");
+			ch=wallet.getConnectionHandler();
+		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (KeyStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidPasswordException e) {
+			fail("Invalid password???");
 		}
+		
 	}
 	
 	public void tearDown(){
 		ch.closeAll();
+		wallet.close();
+		context.deleteDatabase(db_file);
+		
 	}
 	
 	public void testMaintainConnections() throws InterruptedException{

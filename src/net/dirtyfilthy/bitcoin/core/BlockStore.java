@@ -15,7 +15,13 @@ public class BlockStore {
 	protected BigInteger highestWork; 
 	
 	public BlockStore(){
-		put(ProtocolVersion.genesisBlock());
+		this(true);
+	}
+	
+	public BlockStore(boolean addGenesis){
+		if(addGenesis){
+			put(ProtocolVersion.genesisBlock());
+		}
 	}
 	
 	public Block top(){

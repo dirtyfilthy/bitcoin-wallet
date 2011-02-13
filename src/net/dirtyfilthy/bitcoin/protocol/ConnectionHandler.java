@@ -21,9 +21,13 @@ public class ConnectionHandler {
 	private MaintainConnectionsThread maintainThread;
 	private boolean ircBootStrap=true;
 	
-	public ConnectionHandler() throws UnknownHostException{
+	public ConnectionHandler() {
 		this.addressBook=new AddressBook();
-		this.localAddress=new Address("0.0.0.0",18333);
+		try {
+			this.localAddress=new Address("0.0.0.0",18333);
+		} catch (UnknownHostException e) {
+			throw new RuntimeException(e); // should never happen
+		}
 		this.blockChain=new BlockChain();
 		this.maintainThread=new MaintainConnectionsThread(this);
 	
