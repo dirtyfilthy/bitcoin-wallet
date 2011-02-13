@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQuery;
+import android.database.sqlite.SQLiteStatement;
 import net.dirtyfilthy.bitcoin.core.Block;
 import net.dirtyfilthy.bitcoin.core.BlockChain;
 import net.dirtyfilthy.bitcoin.core.BlockStore;
@@ -22,10 +23,12 @@ public class SqlBlockStore extends BlockStore {
 	private Block lastStored;
 	private StringBuilder sql=new StringBuilder(200); 
 	private LinkedList<Block> getByHashCache=new LinkedList<Block>();
+	private SQLiteStatement insertStatement;
 	public SqlBlockStore(SQLiteDatabase db){
 		super(false);
 		this.db=db;
 		Block genesis=ProtocolVersion.genesisBlock();
+		insertStatement=db.compileStatement("INSERT INTO blocks (hash,previous_hash,merkle_root,height,total_work,timestamp,nonce,bits) VALUES (?,?,?,?,?,?,?,?)");
 		db.beginTransaction();
 		try {
 			if(!has(genesis)){
@@ -133,16 +136,15 @@ public class SqlBlockStore extends BlockStore {
 	}
 
 	private void storeBlock(Block b) {
-		ContentValues blockValues = new ContentValues();
-		blockValues.put("hash",b.hash());
-		blockValues.put("previous_hash", b.getPreviousHash());
-		blockValues.put("merkle_root", b.getMerkleRoot());
-		blockValues.put("height",b.getHeight());
-		blockValues.put("total_work",getTotalWork(b).toByteArray());
-		blockValues.put("timestamp",b.getTime());
-		blockValues.put("nonce", b.getNonce());
-		blockValues.put("bits", b.getBits());
-		db.insert("blocks", null, blockValues);
+		insertStatement.bindBlob(1, b.hash());
+		insertStatement.bindBlob(2, b.getPreviousHash());
+		insertStatement.bindBlob(3, b.getMerkleRoot());
+		insertStatement.bindLong(4, b.getHeight());
+		insertStatement.bindBlob(5, getTotalWork(b).toByteArray());
+		insertStatement.bindLong(6, b.getTime());
+		insertStatement.bindLong(7, b.getNonce());
+		insertStatement.bindLong(8, b.getBits());
+		insertStatement.execute();
 		lastStored=b;
 		getByHashCache.offer(b);
 		if(getByHashCache.size()>13){

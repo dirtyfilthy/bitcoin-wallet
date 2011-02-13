@@ -10,6 +10,8 @@ import net.dirtyfilthy.bitcoin.util.MyHex;
 public class BlockChain {
 	private HashMap<BigInteger,Vector<Block>> orphanBlocks=new HashMap<BigInteger,Vector<Block>>();
 	private BlockStore blockStore;
+	int medianTimespan=ProtocolVersion.medianTimeSpan();
+	long[] medianValues=new long[medianTimespan];
 	
 	public BlockChain(){
 		blockStore=new BlockStore();
@@ -146,10 +148,9 @@ public class BlockChain {
 	}
 	
 	public long getMedianTimePast(Block b){
-		int timespan=ProtocolVersion.medianTimeSpan();
-		long time;
 		long temp;
-		long[] values=new long[timespan];
+		long time;
+		int timespan=medianTimespan;
 		Block current=b;
 		int j;
 		// insertion sort this motherfucker
@@ -157,13 +158,13 @@ public class BlockChain {
 		for(int i=0;i<timespan;i++){
 			time=current.getTime();
 			
-			values[i]=time;
+			medianValues[i]=time;
 			
 			for (j = i; j > 0; j--) {
-	            if (values[j-1] > values[j]) {
-	               temp = values[j];
-	               values[j] = values[j-1];
-	               values[j-1] = temp;
+	            if (medianValues[j-1] > medianValues[j]) {
+	               temp = medianValues[j];
+	               medianValues[j] = medianValues[j-1];
+	               medianValues[j-1] = temp;
 	            }
 	         }
 			current=blockStore.getPrevious(current);
@@ -173,7 +174,7 @@ public class BlockChain {
 			}
 		}
 		
-		return values[timespan/2];
+		return medianValues[timespan/2];
 	}
 
 

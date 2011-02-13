@@ -25,7 +25,7 @@ public class ConnectionHandlerTest extends AndroidTestCase {
 		
 		
 		context=getContext();
-		db_file="test.db";
+		db_file="test4.db";
 		context.deleteDatabase(db_file);
 		try {
 			wallet=new Wallet(context,"test.db","password");

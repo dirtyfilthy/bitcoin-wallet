@@ -73,7 +73,7 @@ public class Wallet {
 		
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL("CREATE TABLE keys (id INTEGER PRIMARY KEY AUTOINCREMENT, base58hash160 VARCHAR, public_key BLOB, private_key BLOB, created_at INTEGER, label VARCHAR);");
-			db.execSQL("CREATE TABLE blocks (id INTEGER PRIMARY KEY AUTOINCREMENT, hash BLOB, previous_hash BLOB, merkle_root BLOB, height INTEGER, total_work BLOB, timestamp INTEGER, nonce INTEGER, bits INTEGER);");
+			db.execSQL("CREATE TABLE blocks (id INTEGER PRIMARY KEY AUTOINCREMENT, hash BLOB UNIQUE NOT NULL, previous_hash BLOB NOT NULL, merkle_root BLOB NOT NULL, height INTEGER NOT NULL, total_work BLOB NOT NULL, timestamp INTEGER NOT NULL, nonce INTEGER NOT NULL, bits INTEGER NOT NULL);");
 
 		}
 		
