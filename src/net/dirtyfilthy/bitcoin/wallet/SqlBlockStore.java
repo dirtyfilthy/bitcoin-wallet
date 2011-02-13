@@ -1,6 +1,9 @@
 package net.dirtyfilthy.bitcoin.wallet;
 
 import java.math.BigInteger;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -18,7 +21,7 @@ public class SqlBlockStore extends BlockStore {
 	private SQLiteDatabase db;
 	private Block lastStored;
 	private StringBuilder sql=new StringBuilder(200); 
-	
+	private LinkedList<Block> getByHashCache=new LinkedList<Block>();
 	public SqlBlockStore(SQLiteDatabase db){
 		super(false);
 		this.db=db;
@@ -50,22 +53,19 @@ public class SqlBlockStore extends BlockStore {
 	}
 	
 	public synchronized boolean has(Block b){
-		sql.setLength(0);
-		sql.append("select 1 from blocks where hash=X'");
-		sql.append(MyHex.encode(b.hash()));
-		sql.append("'");
-		Cursor cursor = db.rawQuery(sql.toString(),null); 
-		boolean exists = (cursor.getCount() > 0);
-		cursor.close();
-		return exists;
+		return getByHash(b.hash())!=null;
 	}
 	
 	public synchronized Block getByHash(byte[] hash){
 		
 		// leetle bit of caching
-		
+		Block b;
 		if(lastStored!=null &&  Arrays.areEqual(hash,lastStored.hash())){
 			return lastStored;
+		}
+		b=searchGetByHashCache(hash);
+		if(b!=null){
+			return b;
 		}
 		sql.setLength(0);
 		sql.append("select * from blocks where hash=X'");
@@ -77,7 +77,7 @@ public class SqlBlockStore extends BlockStore {
 			return null;
 		}
 		cursor.moveToFirst();
-		Block b=createBlockFromCursor(cursor);
+		b=createBlockFromCursor(cursor);
 		cursor.close();
 		return b;
 	}
@@ -118,6 +118,19 @@ public class SqlBlockStore extends BlockStore {
 		storeBlock(b);
 		return b;
 	}
+	
+	private Block searchGetByHashCache(byte[] hash){
+		Block b;
+		Iterator<Block> i=getByHashCache.iterator();
+		while(i.hasNext()){
+			b=i.next();
+			if(Arrays.areEqual(hash, b.hash())){
+				return b;
+			}
+		}
+		return null;
+		
+	}
 
 	private void storeBlock(Block b) {
 		ContentValues blockValues = new ContentValues();
@@ -131,6 +144,10 @@ public class SqlBlockStore extends BlockStore {
 		blockValues.put("bits", b.getBits());
 		db.insert("blocks", null, blockValues);
 		lastStored=b;
+		getByHashCache.offer(b);
+		if(getByHashCache.size()>13){
+			getByHashCache.poll();
+		}
 		
 	}
 
