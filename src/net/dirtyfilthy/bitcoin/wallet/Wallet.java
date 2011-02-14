@@ -11,9 +11,11 @@ import java.security.cert.CertificateException;
 
 
 import net.dirtyfilthy.bitcoin.core.BlockChain;
+import net.dirtyfilthy.bitcoin.core.BlockStore;
 import net.dirtyfilthy.bitcoin.protocol.ConnectionHandler;
 import net.dirtyfilthy.bouncycastle.jce.provider.BouncyCastleProvider;
 import android.content.Context;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
  
@@ -32,10 +34,15 @@ public class Wallet {
 		}
 		this.context=c;
 		db=new OpenHelper(context,db_filepath).getWritableDatabase();
-		blockStore=new SqlBlockStore(db);
-		blockChain.setBlockStore(blockStore);
-		connectionHandler.setBlockChain(blockChain);
-		
+		try {
+			blockStore=new SqlBlockStore(db);
+			blockChain.setBlockStore(blockStore);
+			connectionHandler.setBlockChain(blockChain);
+		}
+		catch (SQLiteConstraintException e) {
+			db.close();
+			throw e;
+		}
 		try {
 			keyRing=new KeyRing(c, db, password);
 		} catch (NoSuchAlgorithmException e) {
@@ -53,6 +60,7 @@ public class Wallet {
 		} catch (IOException e) {
 			throw new KeyStoreException(e);
 		}
+		
 		
 	}
 	
@@ -74,7 +82,6 @@ public class Wallet {
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL("CREATE TABLE keys (id INTEGER PRIMARY KEY AUTOINCREMENT, base58hash160 VARCHAR, public_key BLOB, private_key BLOB, created_at INTEGER, label VARCHAR);");
 			db.execSQL("CREATE TABLE blocks (id INTEGER PRIMARY KEY AUTOINCREMENT, hash BLOB UNIQUE NOT NULL, previous_hash BLOB NOT NULL, merkle_root BLOB NOT NULL, height INTEGER NOT NULL, total_work BLOB NOT NULL, timestamp INTEGER NOT NULL, nonce INTEGER NOT NULL, bits INTEGER NOT NULL);");
-
 		}
 		
 		@Override
@@ -86,6 +93,10 @@ public class Wallet {
 	
 	public SQLiteDatabase getDb(){
 		return db;
+	}
+	
+	public SqlBlockStore getBlockStore(){
+		return this.blockStore;
 	}
 	
 	

@@ -8,6 +8,7 @@ import java.util.Vector;
 import net.dirtyfilthy.bitcoin.core.Address;
 import net.dirtyfilthy.bitcoin.core.Block;
 import net.dirtyfilthy.bitcoin.core.BlockChain;
+import net.dirtyfilthy.bitcoin.core.BlockExistsException;
 import net.dirtyfilthy.bitcoin.core.InvalidBlockException;
 import net.dirtyfilthy.bitcoin.core.OrphanBlockException;
 import net.dirtyfilthy.bitcoin.util.MyHex;
@@ -158,15 +159,19 @@ public class ConnectionHandler {
 			}
 			for(Block header : h.headers()){
 				try {
-					if(!blockChain.isKnown(header)){
-						blockChain.addBlock(header);
-					}
+					blockChain.addBlock(header);
+			
 				} catch (InvalidBlockException e) {
 					// TODO actually handle
 					e.printStackTrace();
 					continue;
 				}
 				catch (OrphanBlockException e) {
+					// TODO actually handle
+					e.printStackTrace();
+					continue;
+				}
+				catch (BlockExistsException e) {
 					// TODO actually handle
 					e.printStackTrace();
 					continue;

@@ -37,7 +37,7 @@ public class BlockChain {
 	
 	
 	
-	public synchronized Block addBlock(Block block) throws InvalidBlockException, OrphanBlockException{
+	public synchronized Block addBlock(Block block) throws InvalidBlockException, OrphanBlockException, BlockExistsException{
 		if(!block.validProofOfWork()){
 			System.out.println("FAILED PROOF OF WORK");
 			System.out.println("bits   :"+Integer.toHexString((int) block.getBits()));

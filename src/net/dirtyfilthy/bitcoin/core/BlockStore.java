@@ -20,7 +20,11 @@ public class BlockStore {
 	
 	public BlockStore(boolean addGenesis){
 		if(addGenesis){
-			put(ProtocolVersion.genesisBlock());
+			try {
+				put(ProtocolVersion.genesisBlock());
+			} catch (BlockExistsException e) {
+				// do nothing
+			}
 		}
 	}
 	
@@ -29,7 +33,7 @@ public class BlockStore {
 	}
 	
 	
-	public synchronized Block put(Block b){
+	public synchronized Block put(Block b) throws BlockExistsException {
 		byHash.put(new BigInteger(b.hash()),b);
 		byPrev.put(new BigInteger(b.getPreviousHash()),b);
 		Block prev=getPrevious(b);

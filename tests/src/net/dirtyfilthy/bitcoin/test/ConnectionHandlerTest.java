@@ -10,6 +10,7 @@ import net.dirtyfilthy.bitcoin.protocol.ProtocolVersion;
 import net.dirtyfilthy.bitcoin.wallet.InvalidPasswordException;
 import net.dirtyfilthy.bitcoin.wallet.Wallet;
 import android.content.Context;
+import android.database.sqlite.SQLiteConstraintException;
 import android.os.Debug;
 import android.test.AndroidTestCase;
 
@@ -28,7 +29,7 @@ public class ConnectionHandlerTest extends AndroidTestCase {
 		db_file="test4.db";
 		context.deleteDatabase(db_file);
 		try {
-			wallet=new Wallet(context,"test.db","password");
+			wallet=new Wallet(context,db_file,"password");
 			ch=wallet.getConnectionHandler();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -38,14 +39,18 @@ public class ConnectionHandlerTest extends AndroidTestCase {
 			e.printStackTrace();
 		} catch (InvalidPasswordException e) {
 			fail("Invalid password???");
+		} catch (SQLiteConstraintException e) {
+			throw e;
 		}
+		
 		
 	}
 	
 	public void tearDown(){
+		System.out.println("tearing down..");
 		ch.closeAll();
 		wallet.close();
-		context.deleteDatabase(db_file);
+		//context.deleteDatabase(db_file);
 		
 	}
 	

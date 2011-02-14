@@ -7,11 +7,13 @@ import java.util.Queue;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQuery;
 import android.database.sqlite.SQLiteStatement;
 import net.dirtyfilthy.bitcoin.core.Block;
 import net.dirtyfilthy.bitcoin.core.BlockChain;
+import net.dirtyfilthy.bitcoin.core.BlockExistsException;
 import net.dirtyfilthy.bitcoin.core.BlockStore;
 import net.dirtyfilthy.bitcoin.protocol.ProtocolVersion;
 import net.dirtyfilthy.bitcoin.util.MyHex;
@@ -24,22 +26,32 @@ public class SqlBlockStore extends BlockStore {
 	private StringBuilder sql=new StringBuilder(200); 
 	private LinkedList<Block> getByHashCache=new LinkedList<Block>();
 	private SQLiteStatement insertStatement;
+	private ExposedSQLiteCursor hashCursor;
+	
+	
 	public SqlBlockStore(SQLiteDatabase db){
 		super(false);
 		this.db=db;
 		Block genesis=ProtocolVersion.genesisBlock();
 		insertStatement=db.compileStatement("INSERT INTO blocks (hash,previous_hash,merkle_root,height,total_work,timestamp,nonce,bits) VALUES (?,?,?,?,?,?,?,?)");
-		db.beginTransaction();
+		
+		// this will find nothing but expose the SQLiteQuery to us, all this for a bindBlob() eh?
+		// plus we can continually reuse the cursor
+		
+		// HACK: pass a null here so the blob doesn't rebind as a string
+		
+		hashCursor=(ExposedSQLiteCursor) db.rawQueryWithFactory(new ExposedSQLiteCursor.Factory(), "SELECT * from blocks WHERE hash = ?", null, "blocks");
 		try {
 			if(!has(genesis)){
 				System.out.println("Storing genesis...");
 				put(genesis);
-				db.setTransactionSuccessful();
 			}
 
-		} finally {
-			db.endTransaction();
+		} 
+		catch(BlockExistsException e){
+			// do nothing
 		}
+		
 
 	}
 	
@@ -70,18 +82,18 @@ public class SqlBlockStore extends BlockStore {
 		if(b!=null){
 			return b;
 		}
-		sql.setLength(0);
-		sql.append("select * from blocks where hash=X'");
-		MyHex.encodeAppendStringBuilder(sql,hash);
-		sql.append("'");
-		Cursor cursor = db.rawQuery(sql.toString(),null); 
-		if(cursor.getCount() == 0){
-			cursor.close();
+		SQLiteQuery s;
+		s=hashCursor.getQuery();
+		s.bindBlob(1, hash);
+		hashCursor.requery();
+		
+		if(hashCursor.getCount() == 0){
+			
 			return null;
 		}
-		cursor.moveToFirst();
-		b=createBlockFromCursor(cursor);
-		cursor.close();
+		hashCursor.moveToFirst();
+		b=createBlockFromCursor(hashCursor);
+	
 		return b;
 	}
 	
@@ -107,7 +119,7 @@ public class SqlBlockStore extends BlockStore {
 	
 	
 	
-	public synchronized Block put(Block b){
+	public synchronized Block put(Block b) throws BlockExistsException{
 		Block prev=getPrevious(b);
 		if(topBlock==null || getTotalWork(b).compareTo(topBlock.getTotalWork())>0){
 			topBlock=b;
@@ -118,7 +130,12 @@ public class SqlBlockStore extends BlockStore {
 		else{
 			b.setHeight(0);
 		}
-		storeBlock(b);
+		try{
+			storeBlock(b);
+		}
+		catch(SQLiteConstraintException e){
+			throw new BlockExistsException(e);
+		}
 		return b;
 	}
 	
