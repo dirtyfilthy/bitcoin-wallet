@@ -71,9 +71,11 @@ public class ConnectionHandlerTest extends AndroidTestCase {
 		System.out.println("connections: "+ch.getConnectionsNumber());
 		System.out.println();
 		System.out.println();
+		Debug.startMethodTracing("headers");
 		ch.getInitialHeaders();
 		
-		Thread.sleep(1000 * 1000);
+		Thread.sleep(1000 * 300);
+		Debug.stopMethodTracing();
 	}
 	
 	

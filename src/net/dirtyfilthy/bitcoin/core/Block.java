@@ -30,6 +30,7 @@ public class Block implements ByteArrayable {
 	private BigInteger previousBigIntegerHash;
 	private int height;
 	private BigInteger totalWork;
+	static final private BigInteger MAX_WORK=BigInteger.valueOf(1).shiftLeft(256);
 	
 	
 	public Block(){
@@ -76,8 +77,7 @@ public class Block implements ByteArrayable {
 	}
 	
 	public BigInteger getWork(){
-		BigInteger b=BigInteger.valueOf(1).shiftLeft(256);
-		BigInteger work=b.divide(this.targetHash().add(BigInteger.ONE));
+		BigInteger work=MAX_WORK.divide(this.targetHash().add(BigInteger.ONE));
 		return work;
 	}
 	

@@ -1,6 +1,7 @@
 package net.dirtyfilthy.bitcoin.wallet;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -27,6 +28,7 @@ public class SqlBlockStore extends BlockStore {
 	private LinkedList<Block> getByHashCache=new LinkedList<Block>();
 	private SQLiteStatement insertStatement;
 	private ExposedSQLiteCursor hashCursor;
+	private HashMap<Block,Block> previousHashMap=new HashMap<Block,Block>(); 
 	
 	
 	public SqlBlockStore(SQLiteDatabase db){
@@ -114,6 +116,9 @@ public class SqlBlockStore extends BlockStore {
 	
 
 	public synchronized Block getPrevious(Block b){
+		if(previousHashMap.containsKey(b)){
+			return previousHashMap.get(b);
+		}
 		return getByHash(b.getPreviousHash());
 	}
 	
@@ -125,7 +130,7 @@ public class SqlBlockStore extends BlockStore {
 			topBlock=b;
 		}
 		if(prev!=null){
-			b.setHeight(getPrevious(b).getHeight()+1);
+			b.setHeight(prev.getHeight()+1);
 		}
 		else{
 			b.setHeight(0);
@@ -164,8 +169,9 @@ public class SqlBlockStore extends BlockStore {
 		insertStatement.execute();
 		lastStored=b;
 		getByHashCache.offer(b);
+		previousHashMap.put(b, getPrevious(b));
 		if(getByHashCache.size()>13){
-			getByHashCache.poll();
+			previousHashMap.remove(getByHashCache.poll());
 		}
 		
 	}

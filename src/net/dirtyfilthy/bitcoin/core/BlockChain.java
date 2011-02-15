@@ -47,10 +47,6 @@ public class BlockChain {
 			System.out.println("height :"+blockStore.top().getHeight());
 			throw new InvalidBlockException("Invalid proof of work");
 		}
-		
-		if(blockStore.has(block)){
-			throw new InvalidBlockException("Already added");
-		}
 		BigInteger prevHash=block.previousBigIntegerHash();
 		Block prev=blockStore.getPrevious(block);
 		if(prev==null){
