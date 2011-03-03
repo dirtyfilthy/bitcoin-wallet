@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import net.dirtyfilthy.bouncycastle.crypto.digests.RIPEMD160Digest;
 import net.dirtyfilthy.bouncycastle.jce.provider.JDKMessageDigest;
 
-public class QuickHash {
+public class HashTools {
 	public static MessageDigest sha256digester;
 	public static MessageDigest sha1digester;
 	public static MessageDigest ripemd160digester;

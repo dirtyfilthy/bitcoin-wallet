@@ -6,7 +6,7 @@ import java.io.*;
 import java.math.BigInteger;
 
 import net.dirtyfilthy.bitcoin.core.ByteArrayable;
-import net.dirtyfilthy.bitcoin.util.QuickHash;
+import net.dirtyfilthy.bitcoin.util.HashTools;
 
 public class Packet  implements ByteArrayable {
 	
@@ -167,7 +167,7 @@ public class Packet  implements ByteArrayable {
 	public byte[] checksum(byte[] toChecksum){
 		byte[] checksum={0,0,0,0};
 		if (version>=209){
-			byte[] digest=QuickHash.doubleSha256(toChecksum);
+			byte[] digest=HashTools.doubleSha256(toChecksum);
 			for(int i=0;i<4;i++){
 				checksum[i]=digest[i];
 			}

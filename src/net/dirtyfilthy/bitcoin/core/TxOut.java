@@ -23,6 +23,12 @@ public class TxOut  implements ByteArrayable, Cloneable  {
 		this.script=new Script();
 	}
 	
+	public String toString() {
+		String s="Value: "+value.toLong()+"\n";
+		s+="Script:\n"+script.toString()+"\n";
+		return s;
+	}
+	
 	public void setScript(Script script) {
 		this.script = script;
 	}

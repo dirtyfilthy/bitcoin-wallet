@@ -19,21 +19,25 @@ import java.security.cert.CertificateException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECPoint;
+import java.security.spec.EncodedKeySpec;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import net.dirtyfilthy.bitcoin.core.Base58Hash160;
-import net.dirtyfilthy.bitcoin.wallet.Wallet;
 import net.dirtyfilthy.bouncycastle.jce.ECNamedCurveTable;
 import net.dirtyfilthy.bouncycastle.jce.ECPointUtil;
 import net.dirtyfilthy.bouncycastle.jce.provider.BouncyCastleProvider;
+import net.dirtyfilthy.bouncycastle.jce.provider.JCEECPublicKey;
 import net.dirtyfilthy.bouncycastle.jce.provider.asymmetric.ec.EC5Util;
 import net.dirtyfilthy.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import net.dirtyfilthy.bouncycastle.jce.spec.ECParameterSpec;
 import net.dirtyfilthy.bouncycastle.math.ec.ECCurve;
+import net.dirtyfilthy.bouncycastle.util.encoders.Hex;
 
 public class KeyTools {
 	
@@ -43,7 +47,10 @@ public class KeyTools {
 		if(Security.getProvider("DFBC")==null){
 			Security.addProvider(new BouncyCastleProvider());
 		}
+		JCEECPublicKey key2=(JCEECPublicKey) key;
+		key2.setPointFormat("UNCOMPRESSED");
 		net.dirtyfilthy.bouncycastle.math.ec.ECPoint p=EC5Util.convertPoint(key.getParams(), key.getW(), false);
+		
 		return p.getEncoded();
 	}
 	
@@ -118,6 +125,46 @@ public class KeyTools {
 			throw new RuntimeException(e);
 		}
 		
+	}
+	
+	public static ECPublicKey decodeDerPublicKey(byte[] encoded){
+		if(Security.getProvider("DFBC")==null){
+			Security.addProvider(new BouncyCastleProvider());
+		}
+		EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(encoded);
+		KeyFactory keyFactory;
+		ECPublicKey pubKey;
+		try {
+			keyFactory = KeyFactory.getInstance("ECDSA", "DFBC");
+			pubKey =  (ECPublicKey) keyFactory.generatePublic(publicKeySpec);
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchProviderException e) {
+			throw new RuntimeException(e);
+		} catch (InvalidKeySpecException e) {
+			throw new RuntimeException(e);
+		}
+		return pubKey;
+	}
+	
+	public static ECPrivateKey decodeDerPrivateKey(byte[] encoded){
+		if(Security.getProvider("DFBC")==null){
+			Security.addProvider(new BouncyCastleProvider());
+		}
+		EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(encoded);
+		KeyFactory keyFactory;
+		ECPrivateKey privKey;
+		try {
+			keyFactory = KeyFactory.getInstance("ECDSA", "DFBC");
+			privKey =  (ECPrivateKey) keyFactory.generatePrivate(privateKeySpec);
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchProviderException e) {
+			throw new RuntimeException(e);
+		} catch (InvalidKeySpecException e) {
+			throw new RuntimeException(e);
+		}
+		return privKey;
 	}
 
 	public static boolean verifySignedData(ECPublicKey key,byte data[], byte sig[]){

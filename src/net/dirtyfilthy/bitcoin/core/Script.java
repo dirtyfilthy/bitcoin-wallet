@@ -27,9 +27,9 @@ import java.util.Vector;
 
 import net.dirtyfilthy.bitcoin.protocol.Packet;
 import net.dirtyfilthy.bitcoin.protocol.ProtocolVersion;
+import net.dirtyfilthy.bitcoin.util.HashTools;
 import net.dirtyfilthy.bitcoin.util.KeyTools;
 import net.dirtyfilthy.bitcoin.util.MyHex;
-import net.dirtyfilthy.bitcoin.util.QuickHash;
 import net.dirtyfilthy.bouncycastle.jce.ECNamedCurveTable;
 import net.dirtyfilthy.bouncycastle.jce.ECPointUtil;
 
@@ -103,6 +103,7 @@ public class Script implements ByteArrayable {
 		System.out.println(sub2);
 		Vector<TxIn> txInputs = txTmp.getTxInputs();
 		if (txInIndex >= txInputs.size()) {
+			System.out.println("txindex out of range");
 			return fail;
 		}
 		for (TxIn in : txInputs) {
@@ -124,7 +125,7 @@ public class Script implements ByteArrayable {
 				return fail;
 			}
 			Vector<TxOut> txOutputs = txTmp.getTxOutputs();
-			txOutputs.setSize(out);
+			txOutputs.setSize(out+1);
 			for (int i = 0; i < out; i++)
 				txOutputs.get(i).setNull();
 
@@ -138,7 +139,7 @@ public class Script implements ByteArrayable {
 			Vector<TxIn> nt=new Vector<TxIn>();
 			nt.add(tmp);
 			txTmp.setTxInputs(nt);
-		}
+		} 
 
 		// Serialize and hash
 		byte[] txBytes = txTmp.toByteArray();
@@ -147,7 +148,7 @@ public class Script implements ByteArrayable {
 		ByteBuffer b = ByteBuffer.allocate(4);
 		b.putInt(Integer.reverseBytes(hashType));
 		System.arraycopy(b.array(), 0, toHash, txBytes.length, 4);
-		byte[] h=QuickHash.doubleSha256(toHash);
+		byte[] h=HashTools.doubleSha256(toHash);
 		System.out.println("SIG:");
 		System.out.println(MyHex.encode(h));
 		return h;
@@ -299,7 +300,7 @@ public class Script implements ByteArrayable {
 					return false;
 				}
 			}
-
+ 
 			if (data != null && data.length > 520) {
 				return false;
 			}
@@ -825,15 +826,15 @@ public class Script implements ByteArrayable {
 					byte[] ret;
 					byte[] toHash = stack.pop();
 					if (op == OpCode.OP_RIPEMD160)
-						ret = QuickHash.ripemd160(toHash);
+						ret = HashTools.ripemd160(toHash);
 					else if (op == OpCode.OP_SHA1)
-						ret = QuickHash.sha1(toHash);
+						ret = HashTools.sha1(toHash);
 					else if (op == OpCode.OP_SHA256)
-						ret = QuickHash.sha256(toHash);
+						ret = HashTools.sha256(toHash);
 					else if (op == OpCode.OP_HASH160) {
-						ret = QuickHash.hash160(toHash);
+						ret = HashTools.hash160(toHash);
 					} else {
-						ret = QuickHash.doubleSha256(toHash);
+						ret = HashTools.doubleSha256(toHash);
 					}
 					stack.push(ret);
 
@@ -1024,7 +1025,7 @@ public class Script implements ByteArrayable {
 		}
 		else
 		{
-			this.pushData(QuickHash.reverseByteArray(BigInteger.valueOf(n).toByteArray()));
+			this.pushData(HashTools.reverseByteArray(BigInteger.valueOf(n).toByteArray()));
 		}
 	}		
 
@@ -1088,6 +1089,7 @@ public class Script implements ByteArrayable {
 
 		Stack<byte[]> stack = (Stack<byte[]>) scriptPubKey.getStack();
 		if (stack.empty() || !castToBool(stack.peek())) {
+			System.out.println("Stack returned false");
 			return false;
 		}
 

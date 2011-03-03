@@ -5,9 +5,13 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Vector;
 
+
+
 import net.dirtyfilthy.bitcoin.core.Tx;
 import net.dirtyfilthy.bitcoin.core.TxIn;
 import net.dirtyfilthy.bitcoin.core.TxOut;
+import net.dirtyfilthy.bitcoin.util.MyHex;
+import net.dirtyfilthy.bouncycastle.util.Arrays;
 import net.dirtyfilthy.bouncycastle.util.encoders.Hex;
 import android.test.AndroidTestCase;
 
@@ -38,6 +42,7 @@ public class TxTest extends AndroidTestCase {
 	
 	public void testParse() throws IOException{
 		Tx toTx=new Tx(toTxStream);
+		System.out.println("tx: "+MyHex.encode(toTx.toByteArray()));
 		Vector<TxIn> txIn=toTx.getTxInputs();
 		Vector<TxOut> txOut=toTx.getTxOutputs();
 		assertEquals(3,txIn.size());
@@ -49,10 +54,17 @@ public class TxTest extends AndroidTestCase {
 		assertEquals(1,txOut.size());
 	}
 	
+	public void testConstructFromOther() throws IOException{
+		Tx tx=new Tx(toTxStream);
+		Tx tx2=new Tx(tx);
+		assertTrue("Hashes for tx are not equal",Arrays.areEqual(tx.hash(), tx2.hash()));
+	}
+	
 	public void testVerifySignature() throws IOException{
 		Tx fromTx=new Tx(fromTxStream);
 		Tx toTx=new Tx(toTxStream);
 		assertTrue("verifySignature returned false on legitimate signature", Tx.verifySignature(fromTx, toTx, 0, 0));
 		
 	}
+	
 }

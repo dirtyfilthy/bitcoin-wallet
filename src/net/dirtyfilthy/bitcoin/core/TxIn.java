@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import net.dirtyfilthy.bitcoin.util.MyHex;
-import net.dirtyfilthy.bouncycastle.util.encoders.Hex;
+
 
 
 public class TxIn  implements ByteArrayable, Cloneable {
@@ -15,7 +15,9 @@ public class TxIn  implements ByteArrayable, Cloneable {
 	private Script script=new Script();
 	private long sequence=0;
 	
-	 
+	
+	
+
 	public TxIn(DataInputStream in) throws IOException{
 		in.read(outpointHash);
 		System.out.println("outpoint: "+MyHex.encode(outpointHash));
@@ -25,19 +27,29 @@ public class TxIn  implements ByteArrayable, Cloneable {
 		this.sequence=((long) Integer.reverseBytes(in.readInt())) & 0xffffffffL;
 	}
 	
+	
+	
 	public TxIn() {
 		// TODO Auto-generated constructor stub
+	}
+	
+	public String toString() {
+		String s="outpointHash: "+MyHex.encode(outpointHash)+"\n";
+		s+="outpointIndex: "+this.outpointIndex+"\n";
+		s+="Script:\n"+script.toString()+"\n";
+		s+="Sequence: "+sequence+"\n";
+		return s;
 	}
 
 	public TxIn clone(){
 		try {
 			return (TxIn) super.clone();
 		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
+			
 			throw new RuntimeException(e);
 		}
 	}
-
+	
 
 	public void setOutpointHash(byte[] outpointHash) {
 		this.outpointHash = outpointHash;
@@ -47,7 +59,15 @@ public class TxIn  implements ByteArrayable, Cloneable {
 	public byte[] getOutpointHash() {
 		return outpointHash;
 	}
+	
+	 
+	public long getSequence() {
+		return sequence;
+	}
 
+	public void setSequence(long sequence) {
+		this.sequence = sequence;
+	}
 
 	public void setOutpointIndex(int outpointIndex) {
 		this.outpointIndex = outpointIndex;
@@ -94,6 +114,10 @@ public class TxIn  implements ByteArrayable, Cloneable {
 		dataBuffer.put(rawScript);
 		dataBuffer.putInt((int) this.sequence);
 		return dataBuffer.array();
+	}
+
+	public void setOutpointIndex(long outpointIndex) {
+		this.outpointIndex = outpointIndex;
 	}
 	
 	

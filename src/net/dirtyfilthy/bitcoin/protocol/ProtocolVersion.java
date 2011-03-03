@@ -10,7 +10,7 @@ import net.dirtyfilthy.bitcoin.core.Tx;
 import net.dirtyfilthy.bitcoin.core.TxIn;
 import net.dirtyfilthy.bitcoin.core.TxOut;
 import net.dirtyfilthy.bitcoin.util.MyHex;
-import net.dirtyfilthy.bitcoin.util.QuickHash;
+import net.dirtyfilthy.bitcoin.util.HashTools;
 import net.dirtyfilthy.bouncycastle.util.encoders.Hex;
 
 public class ProtocolVersion {
@@ -39,22 +39,22 @@ public class ProtocolVersion {
 	static public Block genesisBlock(){
 		Block g=new Block();
 		g.setHeight(0);
-		g.setBits(486604799);
+    	g.setBits(486604799);
 		g.setTimestamp(new java.util.Date(1231006505000L));
 		g.setBlockVersion(1);
 		g.setNonce(2083236893);
-		g.setMerkleRoot(QuickHash.reverseByteArray(Hex.decode("4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b")));
-		TxIn in=new TxIn();
-		in.script().pushData(486604799);
-		in.script().pushData(4);
-		in.script().pushData(Hex.decode("736B6E616220726F662074756F6C69616220646E6F63657320666F206B6E697262206E6F20726F6C6C65636E61684320393030322F6E614A2F33302073656D695420656854"));
+		g.setMerkleRoot(HashTools.reverseByteArray(Hex.decode("4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b")));
+//		TxIn in=new TxIn();
+//		in.script().pushData(486604799);
+//		in.script().pushData(4);
+//		in.script().pushData(Hex.decode("736B6E616220726F662074756F6C69616220646E6F63657320666F206B6E697262206E6F20726F6C6C65636E61684320393030322F6E614A2F33302073656D695420656854"));
 		TxOut out=new TxOut();
-		out.setValue(new BtcValue(50*BtcValue.COIN));
-		out.script().pushData(Hex.decode("5F1DF16B2B704C8A578D0BBAF74D385CDE12C11EE50455F3C438EF4C3FBCF649B6DE611FEAE06279A60939E028A8D65C10B73071A6F16719274855FEB0FD8A6704"));
-		out.script().pushOp(OpCode.OP_CHECKSIG);
+//		out.setValue(new BtcValue(50*BtcValue.COIN));
+//		out.script().pushData(Hex.decode("5F1DF16B2B704C8A578D0BBAF74D385CDE12C11EE50455F3C438EF4C3FBCF649B6DE611FEAE06279A60939E028A8D65C10B73071A6F16719274855FEB0FD8A6704"));
+//		out.script().pushOp(OpCode.OP_CHECKSIG);
 		Tx tx=new Tx();
-		tx.getTxInputs().add(in);
-		tx.getTxOutputs().add(out);
+//		tx.getTxInputs().add(in);
+//		tx.getTxOutputs().add(out);
 		g.addTransaction(tx);
 		return g;
 	}
@@ -68,8 +68,8 @@ public class ProtocolVersion {
 		s.setTimestamp(new java.util.Date(1231469665000L));
 		s.setBlockVersion(1);
 		s.setNonce(2573394689L);
-		s.setPreviousHash(QuickHash.reverseByteArray(Hex.decode("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f")));
-		s.setMerkleRoot(QuickHash.reverseByteArray(Hex.decode("0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd512098")));
+		s.setPreviousHash(HashTools.reverseByteArray(Hex.decode("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f")));
+		s.setMerkleRoot(HashTools.reverseByteArray(Hex.decode("0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd512098")));
 		s.setHeadersOnly(true);
 		// block header only
 		return s;

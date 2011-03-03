@@ -9,32 +9,40 @@ import java.util.Arrays;
 public class BtcValue {
 	
 	byte[] bytes=new byte[8];
-	public static final int COIN = 100000000;
-	private BigInteger value=BigInteger.ZERO;
+	public static final long COIN = 100000000L;
+	private long value=0;
 	
-	
+	public long toLong(){
+		return value;
+	}
 	
 	public BtcValue(DataInputStream in) throws IOException{
-		ByteBuffer b=ByteBuffer.allocate(9);
-		b.put(0, (byte) 0); // force this to be positive
-		b.putLong(Long.reverseBytes(in.readLong()));
-		value=new BigInteger(b.array());
+		value=Long.reverseBytes(in.readLong());
 	}
 	
 	public BtcValue(long v){
-		ByteBuffer b=ByteBuffer.allocate(9);
-		b.put(0, (byte) 0); // force this to be positive
-		b.putLong(v);
-		value=new BigInteger(b.array());
+		value=v;
 	}
 	
-	BtcValue(){
+	public BtcValue(double f){
+		f=f*100*(COIN/100);
+		f=(f > 0 ? f + 0.5 : f - 0.5);
+		value=(long) (f);
+	}
+	
+	public double toDouble(){
+		return (double) value / (double) COIN;
+	}
+	
+	public BtcValue(){
+		value=0;
 	}
 	
 	public byte[] toByteArray(){
 		ByteBuffer b=ByteBuffer.allocate(8);
-		b.putLong(Long.reverseBytes(value.longValue()));
+		b.putLong(Long.reverseBytes(value));
 		return b.array();
 	}
 
 }
+

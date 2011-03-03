@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 
 import net.dirtyfilthy.bitcoin.util.Base58;
+
 import android.test.AndroidTestCase;
 
 public class Base58Test extends AndroidTestCase {
@@ -23,6 +24,12 @@ public class Base58Test extends AndroidTestCase {
 		System.out.println("Encoded: "+encoded);
 		byte[] rawOut=Base58.decode(encoded);
 		assertTrue("Doesn't encode/decode to same value", java.util.Arrays.equals(rawIn, rawOut));
+		byte[] leadingZero={0,0,2,3,4,6,0,0};
+		encoded=Base58.encode(leadingZero);
+		System.out.println("Encoded: "+encoded);
+		rawOut=Base58.decode(encoded);
+		assertTrue("Doesn't encode/decode to same value", java.util.Arrays.equals(leadingZero, rawOut));
+		
 		
 	}
 	
@@ -33,7 +40,11 @@ public class Base58Test extends AndroidTestCase {
 		System.out.println("Encoded: "+encoded);
 		byte[] rawOut=Base58.decodeCheck(encoded);
 		assertTrue("Doesn't encode/decode to same value", java.util.Arrays.equals(rawIn, rawOut));
-		
+		byte[] leadingZero={0,0,2,3,4,6,0,0};
+		encoded=Base58.encodeCheck(leadingZero);
+		System.out.println("Encoded: "+encoded);
+		rawOut=Base58.decodeCheck(encoded);
+		assertTrue("Doesn't encode/decode to same value", java.util.Arrays.equals(leadingZero, rawOut));
 	}
 	
 	public void testDecodeBootstrapAddress() throws ParseException, UnsupportedEncodingException{

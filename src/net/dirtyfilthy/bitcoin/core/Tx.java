@@ -7,6 +7,8 @@ import java.nio.ByteOrder;
 import java.util.Vector;
 
 import net.dirtyfilthy.bitcoin.protocol.Packet;
+import net.dirtyfilthy.bitcoin.util.HashTools;
+
 
 public class Tx  implements ByteArrayable {
 	private long transactionVersion;
@@ -33,6 +35,23 @@ public class Tx  implements ByteArrayable {
 		for(TxOut out : t.txOutputs){
 			this.txOutputs.add(out.clone());
 		}
+		
+	}
+	
+	public String toString(){
+		String s="transactionVersion "+this.transactionVersion+"\n";
+		s+="lockTime "+this.lockTime+"\n";
+		s+="INPUTS\n";
+		for(TxIn in : txInputs ){
+			s+=in.toString();
+			s+="\n";
+		}
+		s+="OUTPUTS\n";
+		for(TxOut out : txOutputs){
+			s+=out.toString();
+			s+="\n";
+		}
+		return s;
 		
 	}
 	
@@ -119,6 +138,10 @@ public class Tx  implements ByteArrayable {
 
 	public Vector<TxOut> getTxOutputs() {
 		return txOutputs;
+	}
+	
+	public byte[] hash(){
+		return HashTools.doubleSha256(this.toByteArray());
 	}
 
 }

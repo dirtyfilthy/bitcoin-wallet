@@ -7,6 +7,15 @@ import java.text.ParseException;
 public class Base58 {
 	public final static String BASE58CHARS="123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 	public final static BigInteger FIFTY_EIGHT=new BigInteger("58");
+	
+	/**
+	 * Takes a series of bytes and return a bitcoin base58 encoded string
+	 * @param bytes
+	 * Array of bytes to include
+	 * @return
+	 * Base58 encoded string
+	 */
+	
 	public static String encode(byte[] bytes){
 		byte[] extra_zero=new byte[bytes.length+1];
 		String result="";
@@ -29,6 +38,15 @@ public class Base58 {
 		return result;
 	}
 	
+	/**
+	 * Decode a bitcoin encoded base58 string
+	 * @param encoded
+	 * Base58 encoded string
+	 * @return
+	 * The decoded byte array
+	 * @throws ParseException
+	 */
+	
 	public static byte[] decode(String encoded) throws ParseException{
 		BigInteger bn=BigInteger.ZERO;
 		BigInteger mult;
@@ -49,10 +67,19 @@ public class Base58 {
 		for(int pos=0;((encoded.charAt(pos)=='1') && pos<encoded.length());pos++){
 			leadingZeroes++;
 		}
-		byte[] fin=new byte[raw.length+leadingZeroes];
-		System.arraycopy(raw, 0, fin, leadingZeroes, raw.length);
+		byte[] fin=new byte[raw.length+leadingZeroes-1];
+		System.arraycopy(raw, 1, fin, leadingZeroes, raw.length-1);
 		return fin;
 	}
+	
+	/**
+	 * Decodes a base58 encoded string with a checksum
+	 * @param encoded
+	 * The base58 encoded string with checksum
+	 * @return
+	 * The decoded byte array
+	 * @throws ParseException
+	 */
 	
 	public static byte[] decodeCheck(String encoded) throws ParseException{
 		byte[] raw=decode(encoded);
@@ -61,7 +88,7 @@ public class Base58 {
 		}
 		byte[] decoded=new byte[raw.length-4];
 		System.arraycopy(raw,0,decoded,0,raw.length-4);
-		byte[] hash=QuickHash.doubleSha256(decoded);
+		byte[] hash=HashTools.doubleSha256(decoded);
 		for(int i=0;i<4;i++){
 			if(hash[i]!=raw[decoded.length+i]){
 				throw new ParseException("Incorrect checksum",decoded.length);
@@ -70,8 +97,16 @@ public class Base58 {
 		return decoded;
 	}
 	
+	/**
+	 * Encodes a byte array into a base58 string with a checksum
+	 * @param bytes
+	 * The byte array to encode
+	 * @return
+	 * The base58 encoded string with a checksum
+	 */
+	
 	public static String encodeCheck(byte[] bytes){
-		byte[] hash=QuickHash.doubleSha256(bytes);
+		byte[] hash=HashTools.doubleSha256(bytes);
 		byte[] toHash=new byte[bytes.length+4];
 		System.arraycopy(bytes, 0, toHash, 0, bytes.length);
 		System.arraycopy(hash, 0, toHash, bytes.length, 4);

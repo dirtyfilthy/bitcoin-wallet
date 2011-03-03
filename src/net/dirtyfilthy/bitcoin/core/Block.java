@@ -14,7 +14,7 @@ import java.util.Vector;
 import net.dirtyfilthy.bitcoin.protocol.Packet;
 import net.dirtyfilthy.bitcoin.protocol.ProtocolVersion;
 import net.dirtyfilthy.bitcoin.util.BigIntegerTools;
-import net.dirtyfilthy.bitcoin.util.QuickHash;
+import net.dirtyfilthy.bitcoin.util.HashTools;
 
 public class Block implements ByteArrayable {
 	private long blockVersion;
@@ -117,12 +117,12 @@ public class Block implements ByteArrayable {
 		if(this.hash!=null){
 			return this.hash;
 		}
-		this.hash=QuickHash.doubleSha256(this.toByteArray(false));
+		this.hash=HashTools.doubleSha256(this.toByteArray(false));
 		return hash;
 	}
 	
 	public boolean validProofOfWork() {
-		byte[] h=QuickHash.reverseByteArray(this.hash());
+		byte[] h=HashTools.reverseByteArray(this.hash());
 		if(h[0]!=0){
 			return false;
 		}

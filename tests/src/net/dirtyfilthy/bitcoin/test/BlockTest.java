@@ -7,7 +7,7 @@ import java.io.IOException;
 import net.dirtyfilthy.bitcoin.core.Block;
 import net.dirtyfilthy.bitcoin.protocol.ProtocolVersion;
 import net.dirtyfilthy.bitcoin.util.MyHex;
-import net.dirtyfilthy.bitcoin.util.QuickHash;
+import net.dirtyfilthy.bitcoin.util.HashTools;
 import net.dirtyfilthy.bouncycastle.util.Arrays;
 import net.dirtyfilthy.bouncycastle.util.encoders.Hex;
 import android.test.AndroidTestCase;
@@ -16,13 +16,13 @@ public class BlockTest  extends AndroidTestCase {
 
 	public void testGenesisBlock(){
 		Block genesis=ProtocolVersion.genesisBlock();
-		byte hash[]=QuickHash.reverseByteArray(Hex.decode("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
+		byte hash[]=HashTools.reverseByteArray(Hex.decode("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
 		assertTrue("Genesis block has incorrect hash", Arrays.areEqual(genesis.hash(), hash));
 	}
 	
 	public void testSecondBlock(){
 		Block second=ProtocolVersion.secondBlock();
-		byte hash[]=QuickHash.reverseByteArray(Hex.decode("00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048"));
+		byte hash[]=HashTools.reverseByteArray(Hex.decode("00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048"));
 		assertTrue("Second block has incorrect hash", Arrays.areEqual(second.hash(), hash));
 	}
 	

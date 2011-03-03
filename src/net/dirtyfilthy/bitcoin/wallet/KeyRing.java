@@ -36,7 +36,7 @@ public class KeyRing {
 
 	KeyPair generateKeyPair() {
 		KeyPair pair = generator.generateKeyPair();
-		String hash=new Base58Hash160((ECPublicKey) pair.getPublic()).toString();
+		String hash=new Base58Hash160((java.security.interfaces.ECPublicKey) pair.getPublic()).toString();
 		ContentValues initialValues = new ContentValues();
 		initialValues.put("base58hash160",hash);
 		initialValues.put("public_key", pair.getPublic().getEncoded());
