@@ -63,12 +63,17 @@ public class Base58 {
 		}
 		
 		raw=bn.toByteArray();
+		if(raw[0]==0){
+			byte[] raw2=new byte[raw.length-1];
+			System.arraycopy(raw, 1, raw2, 0, raw.length-1);
+			raw=raw2;
+		}
 		int leadingZeroes=0;
 		for(int pos=0;((encoded.charAt(pos)=='1') && pos<encoded.length());pos++){
 			leadingZeroes++;
 		}
-		byte[] fin=new byte[raw.length+leadingZeroes-1];
-		System.arraycopy(raw, 1, fin, leadingZeroes, raw.length-1);
+		byte[] fin=new byte[raw.length+leadingZeroes];
+		System.arraycopy(raw, 0, fin, leadingZeroes, raw.length);
 		return fin;
 	}
 	
