@@ -1,3 +1,6 @@
+STATUS: not actively developed. I'm not fixing bugs or adding features,
+but I'll look at pull requests when I can. Forks welcome.
+
 This software is released under the MIT Licence, except for the modified bouncycastle library, which released under it's own MIT Licence.
 
 The source code for the modified bouncycastle library can be found at https://github.com/dirtyfilthy/dirtyfilthy-bouncycastle
